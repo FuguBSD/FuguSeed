@@ -55,9 +55,9 @@ The scope of FuguSeed is:
 The project implements public standards, and its words must not narrow them to
 one use (D-03).
 
-- **OVW-VOCABULARY-1** — Every artifact names the standards that it implements,
-  for example BIP39 and SeedQR. Those standards serve more than one use, and
-  every artifact stays neutral between the uses.
+- **OVW-VOCABULARY-1** — Every artifact names the standards that it implements.
+  Those standards serve more than one use, and every artifact stays neutral
+  between the uses.
 - **OVW-VOCABULARY-2** — No file that this repository owns holds the word
   `bitcoin`, the word `crypto`, the word `cryptocurrency`, or the word `money`.
   The rule covers every letter case, singular and plural. A technical name that

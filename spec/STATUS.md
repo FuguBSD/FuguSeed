@@ -26,7 +26,7 @@ phase applies.
 | [OVW-SCOPE](overview.md#ovw-scope)           | n-a   | —       | Citation only.                                                                 |
 | [OVW-VOCABULARY](overview.md#ovw-vocabulary) | done  | —       | [vocabulary.t](../t/fuguseed/vocabulary.t) reads the words and scans the tree. |
 | [OVW-RISKS](overview.md#ovw-risks)           | n-a   | —       | Citation only.                                                                 |
-| [LIST-SOURCE](list.md#list-source)           | n-a   | —       | The properties of an external file. TEST-LIST-2 proves them.                   |
+| [LIST-SOURCE](list.md#list-source)           | n-a   | —       | The properties of an external file. TEST-LIST-1 and TEST-LIST-2 prove them.    |
 | [LIST-SHARE](list.md#list-share)             | open  | —       | —                                                                              |
 | [LIST-MODULE](list.md#list-module)           | open  | —       | —                                                                              |
 | [WORDS-PROGRAM](words.md#words-program)      | open  | —       | —                                                                              |
