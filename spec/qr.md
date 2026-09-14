@@ -35,7 +35,7 @@ QR encoding, the text output, the packed release, and the manual.
 
 <a id="qr-mnemonic"></a>
 
-## The words
+## The seed words
 
 - **QR-MNEMONIC-1** — The input must hold exactly 12 words. Each word must be in
   the list of LIST-MODULE-1. Another count or an unknown word is a failure.
