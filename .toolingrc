@@ -1,0 +1,13 @@
+# Per-repo configuration for the shared FuguBSD tooling. The synced
+# scripts read their identity keys here. See FuguBSD/Tooling.
+sync.pack org
+sync.pack perl
+dist.name     App-FuguSeed
+dist.module   App::FuguSeed
+dist.abstract make BIP39 seed words with dice, and back them up as a SeedQR
+dist.author   Dick Olsson <hi@senzilla.io>
+dist.perl     5.034
+dist.exe      bin/fuguseed-words
+dist.exe      bin/fuguseed-qr
+dist.testdir  t/fuguseed
+dist.prereq   Fugu
