@@ -1,8 +1,8 @@
 # The word list
 
 Both programs read the official English word list of BIP39. This document
-specifies the list, its two shipped copies, the module that serves it, and the
-vocabulary rule of every artifact (D-03, D-10).
+specifies the list, its two shipped copies, and the module that serves it
+(D-10).
 
 <a id="list-source"></a>
 
@@ -40,23 +40,5 @@ vocabulary rule of every artifact (D-03, D-10).
   because `fuguseed-qr` packs it (D-07).
 - **LIST-MODULE-3** — The module must give the word of an index, the index of a
   word, and the list as an array. An unknown word gives `undef`.
-- **LIST-MODULE-4** — One test must compute the SHA-256 of the embedded words
-  and of the share file. Both must equal the constant of LIST-MODULE-1.
-- **LIST-MODULE-5** — One test must prove LIST-SOURCE-2 and LIST-SOURCE-3 on the
-  embedded words.
 
-<a id="list-vocabulary"></a>
-
-## The vocabulary
-
-- **LIST-VOCABULARY-1** — Every artifact names the standards: BIP39 for the
-  words, SeedQR for the code. No tracked file that this repository owns holds
-  the banned stem `bitcoin` or the banned stem `crypto`, in any letter case
-  (D-03). Two exceptions exist: the sentence of this rule that names them, and a
-  file that a pack of FuguBSD/Tooling owns.
-- **LIST-VOCABULARY-2** — A test must read the banned stems from this document
-  and must scan every tracked file for them.
-- **LIST-VOCABULARY-3** — The artifacts call the machine that accepts the 12
-  words "the device". They call the three dice YELLOW, BLUE, and RED. They use
-  "dice" for one die and for several. The device is the object that FuguPass
-  calls a signer. The seed words are the BIP39 mnemonic of FuguPass.
+The tests of the two copies live in [TEST-LIST](testing.md#test-list).

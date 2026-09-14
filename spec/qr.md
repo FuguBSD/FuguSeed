@@ -2,9 +2,10 @@
 
 `fuguseed-qr` reads 12 seed words and prints a Standard SeedQR as text, so a
 person can draw it on paper. It sees the words, so it runs on an air-gapped
-computer only (D-01). The format is the SeedQR specification of the SeedSigner
-project. This document specifies the program, the word check, the QR encoding,
-the text output, the packed release, and the manual.
+computer only (D-01, [SEC-TRUST](security.md#sec-trust)). The format is the
+SeedQR specification of the SeedSigner project. This document specifies the
+program, the word check, the QR encoding, the text output, the packed release,
+and the manual.
 
 <a id="qr-program"></a>
 
@@ -16,15 +17,14 @@ the text output, the packed release, and the manual.
   argument is a usage error: the program prints one usage line to standard error
   and exits 2.
 - **QR-PROGRAM-3** — The program reads the 12 words from the first line of
-  standard input (D-11), separated by spaces. It reads the words from no other
-  channel.
+  standard input, separated by spaces
+  ([SEC-CHANNELS](security.md#sec-channels)).
 - **QR-PROGRAM-4** — The program writes the result to standard output. A failure
-  prints one exact line to standard error and exits 1. A failure line names the
-  word position that failed, never a word.
+  prints one exact line to standard error and exits 1
+  ([SEC-CHANNELS](security.md#sec-channels)).
 - **QR-PROGRAM-5** — The program and every module that it loads run on core Perl
   v5.34 (D-07). They load `Digest::SHA` and no other module outside this
-  repository. They open no file, spawn no process, and read no environment
-  variable.
+  repository ([SEC-TRUST](security.md#sec-trust)).
 - **QR-PROGRAM-6** — Each module of the program has one concern.
   `App::FuguSeed::Mnemonic` holds the words. `App::FuguSeed::Codewords` holds
   the data and error correction codewords. `App::FuguSeed::Matrix` holds the
@@ -45,9 +45,8 @@ the text output, the packed release, and the manual.
   the 16 entropy bytes, as BIP39 states. A wrong checksum is a failure.
 - **QR-MNEMONIC-3** — The digit string is the 12 indexes, 0-based, each as 4
   decimal digits with leading zeros, in word order: 48 digits.
-- **QR-MNEMONIC-4** — The tests must hold the two 12-word test vectors of the
-  SeedQR specification to their digit strings. They must reject a wrong count,
-  an unknown word, and a wrong checksum.
+
+The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
 <a id="qr-codewords"></a>
 
@@ -65,8 +64,8 @@ the text output, the packed release, and the manual.
   remainder of the 34 data codewords over GF(256). The field polynomial is
   `0x11D`, and the generator polynomial is the degree 10 polynomial of the QR
   standard.
-- **QR-CODEWORDS-4** — The tests must hold the 44 codewords of test vector 4 to
-  the values that the reference image of the SeedQR specification implies.
+
+The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
 <a id="qr-matrix"></a>
 
@@ -87,11 +86,8 @@ the text output, the packed release, and the manual.
 - **QR-MATRIX-5** — The format information is the 15 bits `111011111000100`, for
   level L and mask 0, in the two positions of the QR standard. The code holds no
   version information.
-- **QR-MATRIX-6** — The tests must hold the matrix of test vector 4 to the
-  reference image of the SeedQR specification, module for module. The picture of
-  that image sits in the test as 25 rows of `#` and `.`.
-- **QR-MATRIX-7** — The tests must prove QR-MATRIX-2 on the matrix of both test
-  vectors. They must prove that the 15 format bits sit in both positions.
+
+The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
 <a id="qr-text"></a>
 
@@ -112,8 +108,8 @@ the text output, the packed release, and the manual.
 - **QR-TEXT-5** — After each zone view, the program reads one line from standard
   input before the next zone. At the end of the input, it prints the remaining
   zones without a pause.
-- **QR-TEXT-6** — The tests must hold the grid view and the zone views of test
-  vector 4 to fixtures. They must prove the zone counts against the matrix.
+
+The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
 <a id="qr-pack"></a>
 
@@ -127,20 +123,16 @@ the text output, the packed release, and the manual.
   of `fuguseed-words`.
 - **QR-PACK-3** — Two packs of one tree are byte-equal. The file holds no
   timestamp and no build path.
-- **QR-PACK-4** — The release workflow publishes `fuguseed-qr` beside the
-  tarballs, and the signed `SHA256` manifest of the release names it. The manual
-  tells the person to compare the digest on the air-gapped computer.
-- **QR-PACK-5** — The tests must run the packed file with an `@INC` that holds
-  the core library alone, with test vector 4 on standard input. They run it on
-  the running perl, and on `/usr/bin/perl` when it exists. They must prove that
-  the file names no module outside the core of perl 5.34 and no `Fugu::` module.
+
+The release of the file lives in [SEC-RELEASE](security.md#sec-release), and its
+tests in [TEST-PACK](testing.md#test-pack).
 
 <a id="qr-manual"></a>
 
 ## The manual
 
 - **QR-MANUAL-1** — `man/fuguseed-qr/fuguseed-qr.1` documents the program, the
-  input, the output, the exit codes, and the digest check of QR-PACK-4.
+  input, the output, the exit codes, and the digest check of SEC-RELEASE-2.
 - **QR-MANUAL-2** — The manual holds the drawing procedure in ASD-STE100 (D-13).
   The procedure names the air-gapped computer, the printed 25 x 25 template, and
   the marker. It draws one zone at a time and counts the dark modules of each
