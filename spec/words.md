@@ -96,10 +96,11 @@ specifies the program, the two verbs, the sheet, and the manuals.
   and that word 12 is the check word. The device finds word 12 among the 16
   words of the BLUE row that YELLOW and BLUE select (D-02).
 - **WORDS-MANUAL-4** — The procedure holds the WARNING of D-14 and the note on
-  the faces 6 and 9. It holds the rule against a passphrase, and the rule to
-  select the complete word on the device. It requires the comparison of the
+  the faces 6 and 9. It holds the rule against a BIP39 passphrase, and the rule
+  to select the complete word on the device. It requires the comparison of the
   device with the paper before any use, and a second copy.
 - **WORDS-MANUAL-5** — The procedure ends with a pointer to `fuguseed-qr(1)` for
-  the SeedQR backup. It names no software for the roll of the dice.
+  the SeedQR, the form of the words that a consumer such as FuguPass reads. It
+  names no software for the roll of the dice.
 - **WORDS-MANUAL-6** — `make man` renders each page with `mandoc -Tascii`, and a
   test must prove that `mandoc -Tlint` reports no error on any page.

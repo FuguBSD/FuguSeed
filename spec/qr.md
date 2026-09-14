@@ -2,8 +2,9 @@
 
 `fuguseed-qr` reads 12 seed words and prints a Standard SeedQR as text, so a
 person can draw it on paper. It sees the words, so it runs on an air-gapped
-computer only (D-01). This document specifies the program, the word check, the
-QR encoding, the text output, the packed release, and the manual.
+computer only (D-01). The format is the SeedQR specification of the SeedSigner
+project. This document specifies the program, the word check, the QR encoding,
+the text output, the packed release, and the manual.
 
 <a id="qr-program"></a>
 
@@ -146,4 +147,9 @@ QR encoding, the text output, the packed release, and the manual.
   zone. It ends with the scan on the device that proves the drawing.
 - **QR-MANUAL-3** — The manual states that the SeedQR is the 12 words in another
   form, with the WARNING of D-14. It states that a Compact SeedQR is not the
-  output (D-04).
+  output (D-04). It states that a consumer such as FuguPass reads the SeedQR and
+  no typed word.
+- **QR-MANUAL-4** — The drawing must scan under a camera. The template holds a
+  quiet zone of 4 light modules around the code, and a module of 5 mm or more.
+  The manual names the printable 25 x 25 template of the SeedQR specification as
+  the template, or a grid with the same zones.

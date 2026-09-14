@@ -4,7 +4,7 @@ sync.pack org
 sync.pack perl
 dist.name     App-FuguSeed
 dist.module   App::FuguSeed
-dist.abstract make BIP39 seed words with dice, and back them up as a SeedQR
+dist.abstract make BIP39 seed words with dice, and turn them into a SeedQR
 dist.author   Dick Olsson <hi@senzilla.io>
 dist.perl     5.034
 dist.exe      bin/fuguseed-words

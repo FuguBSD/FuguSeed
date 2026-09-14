@@ -58,4 +58,5 @@ vocabulary rule of every artifact (D-03, D-10).
   and must scan every tracked file for them.
 - **LIST-VOCABULARY-3** — The artifacts call the machine that accepts the 12
   words "the device". They call the three dice YELLOW, BLUE, and RED. They use
-  "dice" for one die and for several.
+  "dice" for one die and for several. The device is the object that FuguPass
+  calls a signer. The seed words are the BIP39 mnemonic of FuguPass.

@@ -1,7 +1,7 @@
 # FuguSeed specification
 
 FuguSeed helps one person make BIP39 seed words with three dice, on paper, and
-back them up as a SeedQR. Two programs exist. `fuguseed-words` builds a printed
+turn them into a SeedQR. Two programs exist. `fuguseed-words` builds a printed
 word sheet from the official English word list, checks a built sheet, and holds
 the offline procedure in its manual. It sees no seed word. `fuguseed-qr` reads
 12 seed words and prints a Standard SeedQR as text, zone by zone, so a person
