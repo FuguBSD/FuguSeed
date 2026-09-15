@@ -19,7 +19,7 @@ two verbs, the sheet, and the manuals.
   exit 0. A command line without a verb is a usage error.
 - **WORDS-PROGRAM-4** — Standard output carries the result of a verb only. Every
   diagnostic goes to standard error through `Fugu::Log` in stderr mode.
-- **WORDS-PROGRAM-5** — The source floor is Perl v5.36. The modules that the
+- **WORDS-PROGRAM-5** — The source floor is Perl v5.34. The modules that the
   program loads can use every core module and every `Fugu::` module.
 
 The trust rule of the program lives in [SEC-TRUST](security.md#sec-trust), and
