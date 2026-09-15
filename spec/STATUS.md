@@ -20,34 +20,34 @@ phase applies.
 
 ## Units
 
-| Unit                                         | State | Done by | Note                                                                           |
-| -------------------------------------------- | ----- | ------- | ------------------------------------------------------------------------------ |
-| [OVW-PURPOSE](overview.md#ovw-purpose)       | n-a   | —       | Citation only.                                                                 |
-| [OVW-SCOPE](overview.md#ovw-scope)           | n-a   | —       | Citation only.                                                                 |
-| [OVW-VOCABULARY](overview.md#ovw-vocabulary) | done  | —       | [vocabulary.t](../t/fuguseed/vocabulary.t) reads the words and scans the tree. |
-| [OVW-RISKS](overview.md#ovw-risks)           | n-a   | —       | Citation only.                                                                 |
-| [LIST-SOURCE](list.md#list-source)           | n-a   | —       | The properties of an external file. TEST-LIST-1 and TEST-LIST-2 prove them.    |
-| [LIST-SHARE](list.md#list-share)             | open  | —       | —                                                                              |
-| [LIST-MODULE](list.md#list-module)           | open  | —       | —                                                                              |
-| [WORDS-PROGRAM](words.md#words-program)      | open  | —       | —                                                                              |
-| [WORDS-BUILD](words.md#words-build)          | open  | —       | —                                                                              |
-| [WORDS-CHECK](words.md#words-check)          | open  | —       | —                                                                              |
-| [WORDS-MANUAL](words.md#words-manual)        | open  | —       | —                                                                              |
-| [QR-PROGRAM](qr.md#qr-program)               | open  | —       | —                                                                              |
-| [QR-MNEMONIC](qr.md#qr-mnemonic)             | open  | —       | —                                                                              |
-| [QR-CODEWORDS](qr.md#qr-codewords)           | open  | —       | —                                                                              |
-| [QR-MATRIX](qr.md#qr-matrix)                 | open  | —       | —                                                                              |
-| [QR-TEXT](qr.md#qr-text)                     | open  | —       | —                                                                              |
-| [QR-PACK](qr.md#qr-pack)                     | open  | —       | —                                                                              |
-| [QR-MANUAL](qr.md#qr-manual)                 | open  | —       | —                                                                              |
-| [SEC-TRUST](security.md#sec-trust)           | open  | —       | —                                                                              |
-| [SEC-CHANNELS](security.md#sec-channels)     | open  | —       | —                                                                              |
-| [SEC-RELEASE](security.md#sec-release)       | open  | —       | —                                                                              |
-| [TEST-LIST](testing.md#test-list)            | open  | —       | —                                                                              |
-| [TEST-SHEET](testing.md#test-sheet)          | open  | —       | —                                                                              |
-| [TEST-QR](testing.md#test-qr)                | open  | —       | —                                                                              |
-| [TEST-PACK](testing.md#test-pack)            | open  | —       | —                                                                              |
-| [TEST-MANUAL](testing.md#test-manual)        | open  | —       | —                                                                              |
+| Unit                                         | State | Done by | Note                                                                                |
+| -------------------------------------------- | ----- | ------- | ----------------------------------------------------------------------------------- |
+| [OVW-PURPOSE](overview.md#ovw-purpose)       | n-a   | —       | Citation only.                                                                      |
+| [OVW-SCOPE](overview.md#ovw-scope)           | n-a   | —       | Citation only.                                                                      |
+| [OVW-VOCABULARY](overview.md#ovw-vocabulary) | done  | —       | [vocabulary.t](../t/fuguseed/vocabulary.t) reads the five words and scans the tree. |
+| [OVW-RISKS](overview.md#ovw-risks)           | n-a   | —       | Citation only.                                                                      |
+| [LIST-SOURCE](list.md#list-source)           | n-a   | —       | The properties of an external file. TEST-LIST-1 and TEST-LIST-2 prove them.         |
+| [LIST-SHARE](list.md#list-share)             | open  | —       | —                                                                                   |
+| [LIST-MODULE](list.md#list-module)           | open  | —       | —                                                                                   |
+| [WORDS-PROGRAM](words.md#words-program)      | open  | —       | —                                                                                   |
+| [WORDS-BUILD](words.md#words-build)          | open  | —       | —                                                                                   |
+| [WORDS-CHECK](words.md#words-check)          | open  | —       | —                                                                                   |
+| [WORDS-MANUAL](words.md#words-manual)        | open  | —       | —                                                                                   |
+| [QR-PROGRAM](qr.md#qr-program)               | open  | —       | —                                                                                   |
+| [QR-MNEMONIC](qr.md#qr-mnemonic)             | open  | —       | —                                                                                   |
+| [QR-CODEWORDS](qr.md#qr-codewords)           | open  | —       | —                                                                                   |
+| [QR-MATRIX](qr.md#qr-matrix)                 | open  | —       | —                                                                                   |
+| [QR-TEXT](qr.md#qr-text)                     | open  | —       | —                                                                                   |
+| [QR-PACK](qr.md#qr-pack)                     | open  | —       | —                                                                                   |
+| [QR-MANUAL](qr.md#qr-manual)                 | open  | —       | —                                                                                   |
+| [SEC-TRUST](security.md#sec-trust)           | open  | —       | —                                                                                   |
+| [SEC-CHANNELS](security.md#sec-channels)     | open  | —       | —                                                                                   |
+| [SEC-RELEASE](security.md#sec-release)       | open  | —       | —                                                                                   |
+| [TEST-LIST](testing.md#test-list)            | open  | —       | —                                                                                   |
+| [TEST-SHEET](testing.md#test-sheet)          | open  | —       | —                                                                                   |
+| [TEST-QR](testing.md#test-qr)                | open  | —       | —                                                                                   |
+| [TEST-PACK](testing.md#test-pack)            | open  | —       | —                                                                                   |
+| [TEST-MANUAL](testing.md#test-manual)        | open  | —       | —                                                                                   |
 
 ## Update protocol
 

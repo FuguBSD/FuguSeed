@@ -37,16 +37,16 @@ The scope of FuguSeed is:
 - The packed single file `fuguseed-qr` for the air-gapped computer
   ([QR-PACK](qr.md#qr-pack)).
 
-| Non-goal                    | Statement                                                                                 |
-| --------------------------- | ----------------------------------------------------------------------------------------- |
-| 24 words                    | No program accepts 24 words (D-04).                                                       |
-| A Compact SeedQR            | No program emits a Compact SeedQR (D-04).                                                 |
-| Seed generation by software | No program generates a seed word (D-02).                                                  |
-| A random source             | No program holds a random source, so no audit of one exists.                              |
-| A consumer function         | No function of a consumer, such as a vault or a wallet device, exists in FuguSeed (D-15). |
-| Another word list           | The English list is the one word list (D-10).                                             |
-| A BIP39 passphrase          | No program takes a passphrase, and the procedure holds the rule against one.              |
-| A printed SeedQR template   | The repository ships no template. The manual names an external one (QR-MANUAL-4).         |
+| Non-goal                    | Statement                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------- |
+| 24 words                    | No program accepts 24 words (D-04).                                                |
+| A Compact SeedQR            | No program emits a Compact SeedQR (D-04).                                          |
+| Seed generation by software | No program generates a seed word (D-02).                                           |
+| A random source             | No program holds a random source, so no audit of one exists.                       |
+| A consumer function         | No function of a consumer, such as a vault or a signer, exists in FuguSeed (D-15). |
+| Another word list           | The English list is the one word list (D-10).                                      |
+| A BIP39 passphrase          | No program takes a passphrase, and the procedure holds the rule against one.       |
+| A printed SeedQR template   | The repository ships no template. The manual names an external one (QR-MANUAL-4).  |
 
 <a id="ovw-vocabulary"></a>
 
@@ -58,11 +58,12 @@ one use (D-03).
 - **OVW-VOCABULARY-1** — Every artifact names the standards that it implements.
   Those standards serve more than one use, and every artifact stays neutral
   between the uses.
-- **OVW-VOCABULARY-2** — No file that this repository owns holds the word
-  `bitcoin`, the word `crypto`, the word `cryptocurrency`, or the word `money`.
-  The rule covers every letter case, singular and plural. A technical name that
-  an external project fixes, such as `libcrypto`, is not a word. It sits in a
-  code span, and it names the external thing only.
+- **OVW-VOCABULARY-2** — No file that this repository owns holds a banned word.
+  The banned words are the word `bitcoin`, the word `crypto`, the word
+  `cryptocurrency`, the word `money`, and the word `wallet`. The rule covers
+  every letter case, singular and plural. A technical name that an external
+  project fixes, such as `libcrypto`, is not a word. It sits in a code span, and
+  it names the external thing only.
 - **OVW-VOCABULARY-3** — A test reads the banned words from this document and
   scans every tracked file for them. The scan skips a code span, a code block,
   and a file that a pack of FuguBSD/Tooling owns. It also skips a record under
