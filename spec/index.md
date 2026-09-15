@@ -24,7 +24,7 @@ contract, the ID conventions, and the document tables.
 - A plan must cite each unit that it touches but neither implements nor extends,
   for example `Defers: QR-PACK`.
 - A plan must cite each `done` unit that it extends, for example
-  `Extends: LIST-MODULE`.
+  `Extends: OVW-VOCABULARY`.
 - The change that implements a unit, or a part of one, must set the unit state
   in [STATUS.md](STATUS.md) in the same change.
 
@@ -40,11 +40,14 @@ shape, the append-only numbers, the retire procedure, and the citation forms.
 Each document specifies one area of work. The code of a document prefixes the
 IDs of its units.
 
-| Code  | Document             | Area                                               |
-| ----- | -------------------- | -------------------------------------------------- |
-| LIST  | [list.md](list.md)   | The word list, its copies, and the vocabulary      |
-| WORDS | [words.md](words.md) | `fuguseed-words`: the sheet, the check, the manual |
-| QR    | [qr.md](qr.md)       | `fuguseed-qr`: the words, the code, the pack       |
+| Code  | Document                   | Area                                                   |
+| ----- | -------------------------- | ------------------------------------------------------ |
+| OVW   | [overview.md](overview.md) | The purpose, the scope, the vocabulary, and the limits |
+| LIST  | [list.md](list.md)         | The word list, its copies, and the list module         |
+| WORDS | [words.md](words.md)       | `fuguseed-words`: the sheet, the check, the manual     |
+| QR    | [qr.md](qr.md)             | `fuguseed-qr`: the words, the code, the pack           |
+| SEC   | [security.md](security.md) | The trust levels, the channels, and the release        |
+| TEST  | [testing.md](testing.md)   | The rules that bind the tests                          |
 
 ## Governance documents
 

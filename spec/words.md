@@ -1,8 +1,9 @@
 # fuguseed-words
 
 `fuguseed-words` builds the printed word sheet, checks a built sheet, and holds
-the offline procedure in its manuals. It sees no seed word (D-01). This document
-specifies the program, the two verbs, the sheet, and the manuals.
+the offline procedure in its manuals. It sees no seed word (D-01,
+[SEC-TRUST](security.md#sec-trust)). This document specifies the program, the
+two verbs, the sheet, and the manuals.
 
 <a id="words-program"></a>
 
@@ -18,11 +19,11 @@ specifies the program, the two verbs, the sheet, and the manuals.
   exit 0. A command line without a verb is a usage error.
 - **WORDS-PROGRAM-4** — Standard output carries the result of a verb only. Every
   diagnostic goes to standard error through `Fugu::Log` in stderr mode.
-- **WORDS-PROGRAM-5** — The program must accept no seed word on any channel, and
-  it must hold no code that maps 12 words to anything. The tests must prove that
-  no module of the program loads `App::FuguSeed::Mnemonic`.
-- **WORDS-PROGRAM-6** — The source floor is Perl v5.36. The modules that the
+- **WORDS-PROGRAM-5** — The source floor is Perl v5.36. The modules that the
   program loads can use every core module and every `Fugu::` module.
+
+The trust rule of the program lives in [SEC-TRUST](security.md#sec-trust), and
+its test in [TEST-PACK](testing.md#test-pack).
 
 <a id="words-build"></a>
 
@@ -75,11 +76,8 @@ specifies the program, the two verbs, the sheet, and the manuals.
   row header, and each of the 2048 cells with its expected text, by position. It
   proves that each word appears once, and that the two footers name the digest
   of the list.
-- **WORDS-CHECK-7** — The tests must run the check on a built sheet and on a set
-  of corrupted sheets. The set holds a wrong word, a swapped pair, a wrong
-  label, a duplicated block, and an extra attribute. It holds a comment, a
-  script, a soft hyphen, a changed style rule, and a wrong footer digest. Each
-  corrupted sheet must fail.
+
+The tests of the check live in [TEST-SHEET](testing.md#test-sheet).
 
 <a id="words-manual"></a>
 
@@ -102,5 +100,5 @@ specifies the program, the two verbs, the sheet, and the manuals.
 - **WORDS-MANUAL-5** — The procedure ends with a pointer to `fuguseed-qr(1)` for
   the SeedQR, the form of the words that a consumer such as FuguPass reads. It
   names no software for the roll of the dice.
-- **WORDS-MANUAL-6** — `make man` renders each page with `mandoc -Tascii`, and a
-  test must prove that `mandoc -Tlint` reports no error on any page.
+- **WORDS-MANUAL-6** — `make man` renders each page with `mandoc -Tascii`
+  ([TEST-MANUAL](testing.md#test-manual)).
