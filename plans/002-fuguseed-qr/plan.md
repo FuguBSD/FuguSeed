@@ -8,11 +8,14 @@ mandoc test.
 
 Implements: QR-PROGRAM, QR-MNEMONIC, QR-CODEWORDS, QR-MATRIX, QR-TEXT,
 QR-MANUAL, TEST-QR, TEST-MANUAL, SEC-CHANNELS. Implements: SEC-TRUST without
-SEC-TRUST-1. Defers: QR-PACK, SEC-RELEASE, WORDS-MANUAL.
+SEC-TRUST-1. Implements: WORDS-MANUAL without WORDS-MANUAL-1, WORDS-MANUAL-2,
+WORDS-MANUAL-3, WORDS-MANUAL-4, and WORDS-MANUAL-5. Defers: QR-PACK,
+SEC-RELEASE.
 
 SEC-TRUST-1 binds `fuguseed-words`, so plan 004 lands it. Plan 003 packs the
 program and releases the file. This plan lands the `man` target that
-WORDS-MANUAL-6 names, because the first page appears here.
+WORDS-MANUAL-6 names, because the first page appears here. WORDS-MANUAL-1 to
+WORDS-MANUAL-5 bind the manuals of `fuguseed-words`, so plan 004 lands them.
 
 ## Purpose
 
@@ -103,9 +106,11 @@ comment names the table of the standard (QR-PROGRAM-7).
 - An argument gives one usage line on standard error and exit 2.
 - A wrong word gives one line on standard error that names the position and
   holds no word of the input, and exit 1.
-- The sources of the six files load `Digest::SHA` and modules of this repository
-  only. They hold no `open`, `opendir`, `system`, `exec`, `fork`, backtick,
-  `qx`, or `%ENV` (SEC-TRUST-3).
+- The scan covers the six files of this plan and `lib/App/FuguSeed/List.pm`. It
+  takes the module list of the program, so a later module joins it. Each source
+  loads `Digest::SHA` and modules of this repository only. Each source holds no
+  `open`, `opendir`, `system`, `exec`, `fork`, backtick, `qx`, or `%ENV`
+  (SEC-TRUST-3, QR-PROGRAM-5).
 
 `t/fuguseed/man.t` runs `mandoc -Tlint` on each page under `man` and requires an
 empty report (TEST-MANUAL-1).
@@ -113,8 +118,10 @@ empty report (TEST-MANUAL-1).
 ## Acceptance
 
 - `make check` passes, and `make man` renders the page.
-- Every cited unit reads `done`, except SEC-TRUST, which reads `partial` with
-  SEC-TRUST-1 as the absent part.
+- Every cited unit reads `done`, except SEC-TRUST and WORDS-MANUAL. SEC-TRUST
+  reads `partial` with SEC-TRUST-1 as the absent part. WORDS-MANUAL reads
+  `partial` with WORDS-MANUAL-1, WORDS-MANUAL-2, WORDS-MANUAL-3, WORDS-MANUAL-4,
+  and WORDS-MANUAL-5 as the absent parts.
 - The change deletes this plan.
 
 ## What this plan does not do

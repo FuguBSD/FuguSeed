@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed. It waits on plan 002 for the modules that the packer lists.
+Proposed. It waits on plan 002 for the modules that the packer lists. Plan 004
+waits on it for TEST-PACK-1 and TEST-PACK-2.
 
 Implements: QR-PACK, SEC-RELEASE. Implements: TEST-PACK without TEST-PACK-3.
 
@@ -22,11 +23,13 @@ changes neither file.
 
 ## Constraints that shape the design
 
-**The packer packs the staged tree.** `scripts/pack` takes the `--version` and
+**The packer packs the tarball.** `scripts/pack` takes the `--version` and
 `--out` options of `scripts/dist`. It runs `scripts/dist` with the same values,
-then reads the modules from the staged tree under `build/`. The staged modules
-carry the `$VERSION` of the tag, so the packed file names its version. Two packs
-of one tree and one version are byte-equal (QR-PACK-3).
+then reads the modules from the tarball that the build writes. It extracts the
+tarball into a temporary directory under `build/`, packs from that directory,
+and removes the directory. The tarball holds the modules with the `$VERSION` of
+the tag, so the packed file names its version. Two packs of one tree and one
+version are byte-equal (QR-PACK-3).
 
 **The module list is fixed.** The packer holds the six names of QR-PROGRAM-6 and
 LIST-MODULE-1, in dependency order: List, Mnemonic, Codewords, Matrix, Text, QR.

@@ -3,14 +3,17 @@
 ## Status
 
 Proposed. It waits on plan 001 for the list, and on plan 002 for the `man`
-target and the mandoc test. It is independent of plan 003.
+target and the mandoc test. It also waits on plan 003 for TEST-PACK-1 and
+TEST-PACK-2.
 
-Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, WORDS-MANUAL, TEST-SHEET.
-Implements: LIST-SHARE, SEC-TRUST, TEST-PACK.
+Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
+WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE, SEC-TRUST,
+TEST-PACK.
 
-Of the three shared units, this plan lands LIST-SHARE-2 and LIST-SHARE-3,
-SEC-TRUST-1, and TEST-PACK-3. The other rules of those units come from plan 001,
-plan 002, and plan 003.
+Of LIST-SHARE, SEC-TRUST, and TEST-PACK, this plan lands LIST-SHARE-2 and
+LIST-SHARE-3, SEC-TRUST-1, and TEST-PACK-3. The other rules of those units come
+from plan 001, plan 002, and plan 003. Plan 002 lands WORDS-MANUAL-6, the `man`
+target, so this plan lands the other five rules of that unit.
 
 ## Purpose
 
@@ -99,6 +102,8 @@ the roll of the dice.
   and a wrong footer digest. Each failure names a byte offset or a position.
 - The list reader refuses a list with another digest (LIST-SHARE-3).
 - The share files resolve in the checkout (LIST-SHARE-2).
+- The test builds the distribution with `make dist`, installs it into a
+  temporary prefix, and resolves the share path there (LIST-SHARE-2).
 
 `t/fuguseed/words-program.t` runs the program as a child and holds:
 
