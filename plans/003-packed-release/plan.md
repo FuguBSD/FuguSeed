@@ -24,12 +24,15 @@ changes neither file.
 ## Constraints that shape the design
 
 **The packer packs the tarball.** `scripts/pack` takes the `--version` and
-`--out` options of `scripts/dist`. It runs `scripts/dist` with the same values,
-then reads the modules from the tarball that the build writes. It extracts the
-tarball into a temporary directory under `build/`, packs from that directory,
-and removes the directory. The tarball holds the modules with the `$VERSION` of
-the tag, so the packed file names its version. Two packs of one tree and one
-version are byte-equal (QR-PACK-3).
+`--out` options of `scripts/dist`. `--out` names the output directory, and
+`build` is its default. It runs `scripts/dist` with the same values, then reads
+the tarball path from `Built <path>`, the last line of that output. No second
+copy of the tag logic exists: `scripts/dist` derives the version from the latest
+tag when `--version` is empty. It extracts the tarball into a temporary
+directory under the output directory, packs from that directory, and removes the
+directory. The tarball holds the modules with the `$VERSION` of the tag, so the
+packed file names its version. Two packs of one tree and one version are
+byte-equal (QR-PACK-3).
 
 **The module list is fixed.** The packer holds the six names of QR-PROGRAM-6 and
 LIST-MODULE-1, in dependency order: List, Mnemonic, Codewords, Matrix, Text, QR.
@@ -39,6 +42,12 @@ program body comes last, under `package main`.
 
 **The packer is core Perl.** It is a bootstrap script of this repository: core
 modules only, and v5.34, like `scripts/deps`.
+
+**The pack test is checkout-only.** `.toolingrc` sets `dist.testdir` to
+`t/fuguseed`, so `scripts/dist` ships each test of that directory in the
+tarball. A test that runs a make target or a script of this repository lives in
+`t/ci/`, which the tarball excludes. `mk/local.mk` names both directories in
+`TEST_GLOBS`, so `make test` runs each test.
 
 **The shebang is the base perl.** The packed file starts with `#!/usr/bin/perl`.
 The air-gapped computer runs its base perl, and D-07 allows no install step
@@ -51,15 +60,15 @@ the asset that `release.yml` names and lists it in the signed `SHA256` manifest
 
 ## Files
 
-| File                | Change                                              |
-| ------------------- | --------------------------------------------------- |
-| `scripts/pack`      | The packer                                          |
-| `t/fuguseed/pack.t` | The tests below                                     |
-| `spec/STATUS.md`    | QR-PACK and SEC-RELEASE `done`, TEST-PACK `partial` |
+| File             | Change                                              |
+| ---------------- | --------------------------------------------------- |
+| `scripts/pack`   | The packer                                          |
+| `t/ci/pack.t`    | The tests below                                     |
+| `spec/STATUS.md` | QR-PACK and SEC-RELEASE `done`, TEST-PACK `partial` |
 
 ## Tests
 
-`t/fuguseed/pack.t` packs into a temporary directory with the version `0.0.0`
+`t/ci/pack.t` runs `scripts/pack --version 0.0.0 --out <temporary directory>`
 and holds:
 
 - The packed file runs with an `@INC` of the archlib and the privlib of the

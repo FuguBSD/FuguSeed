@@ -79,6 +79,7 @@ resolve through `Fugu::File->share_path`, in a checkout and after an install
 | `man/fuguseed/fuguseed.7`             | The offline procedure in ASD-STE100                      |
 | `t/fuguseed/sheet.t`                  | The tests below                                          |
 | `t/fuguseed/words-program.t`          | The program tests below                                  |
+| `t/ci/install.t`                      | The install test below                                   |
 | `spec/STATUS.md`                      | The cited units                                          |
 
 The procedure page follows WORDS-MANUAL-2 to WORDS-MANUAL-5. Its sections are
@@ -102,8 +103,11 @@ the roll of the dice.
   and a wrong footer digest. Each failure names a byte offset or a position.
 - The list reader refuses a list with another digest (LIST-SHARE-3).
 - The share files resolve in the checkout (LIST-SHARE-2).
-- The test builds the distribution with `make dist`, installs it into a
-  temporary prefix, and resolves the share path there (LIST-SHARE-2).
+
+`t/ci/install.t` builds the distribution with
+`scripts/dist --out <temporary directory>`, installs it into a temporary prefix,
+and resolves the share path there (LIST-SHARE-2). It sits outside `t/fuguseed/`,
+as plan 003 states.
 
 `t/fuguseed/words-program.t` runs the program as a child and holds:
 
