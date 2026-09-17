@@ -65,22 +65,27 @@ resolve through `Fugu::File->share_path`, in a checkout and after an install
 
 ## Files
 
-| File                                  | Change                                                   |
-| ------------------------------------- | -------------------------------------------------------- |
-| `bin/fuguseed-words`                  | The program: `App::FuguSeed::Words->run(@ARGV)`          |
-| `lib/App/FuguSeed/Words.pm`           | The `Fugu::CLI` dispatch of `build` and `check`          |
-| `lib/App/FuguSeed/ListFile.pm`        | The list file reader and its digest check                |
-| `lib/App/FuguSeed/Sheet.pm`           | The builder (WORDS-BUILD-8)                              |
-| `lib/App/FuguSeed/Check.pm`           | The checker (WORDS-CHECK)                                |
-| `lib/App/FuguSeed/*.pod`              | One sidecar per module                                   |
-| `share/fuguseed/sheet.html`           | The template                                             |
-| `share/fuguseed/sheet.css`            | The style sheet: selection by element and structure only |
-| `man/fuguseed-words/fuguseed-words.1` | The program manual and the print instructions            |
-| `man/fuguseed/fuguseed.7`             | The offline procedure in ASD-STE100                      |
-| `t/fuguseed/sheet.t`                  | The tests below                                          |
-| `t/fuguseed/words-program.t`          | The program tests below                                  |
-| `t/ci/install.t`                      | The install test below                                   |
-| `spec/STATUS.md`                      | The cited units                                          |
+| File                                  | Change                                                                    |
+| ------------------------------------- | ------------------------------------------------------------------------- |
+| `bin/fuguseed-words`                  | The program: `App::FuguSeed::Words->run(@ARGV)`                           |
+| `lib/App/FuguSeed/Words.pm`           | The `Fugu::CLI` dispatch of `build` and `check`                           |
+| `lib/App/FuguSeed/ListFile.pm`        | The list file reader and its digest check                                 |
+| `lib/App/FuguSeed/Sheet.pm`           | The builder (WORDS-BUILD-8)                                               |
+| `lib/App/FuguSeed/Check.pm`           | The checker (WORDS-CHECK)                                                 |
+| `lib/App/FuguSeed/*.pod`              | One sidecar per module                                                    |
+| `share/fuguseed/sheet.html`           | The template                                                              |
+| `share/fuguseed/sheet.css`            | The style sheet: selection by element and structure only                  |
+| `man/fuguseed-words/fuguseed-words.1` | The program manual and the print instructions                             |
+| `man/fuguseed/fuguseed.7`             | The offline procedure in ASD-STE100                                       |
+| `t/fuguseed/sheet.t`                  | The tests below                                                           |
+| `t/fuguseed/words-program.t`          | The program tests below                                                   |
+| `t/fuguseed/fixtures/sheet.html`      | The sheet of the shipped list on the fixed date                           |
+| `t/scripts/install.t`                 | The install test below                                                    |
+| `.toolingrc`                          | One `dist.share-extra` line for the sheet fixture                         |
+| `spec/STATUS.md`                      | The cited units, and `t/scripts/install.t` in the Code roots of `list.md` |
+
+`.toolingrc` names the sheet fixture in `dist.share-extra`, because
+`scripts/dist` copies a test file only.
 
 The procedure page follows WORDS-MANUAL-2 to WORDS-MANUAL-5. Its sections are
 the equipment and the names, the steps before the start, and how to find one
@@ -104,10 +109,11 @@ the roll of the dice.
 - The list reader refuses a list with another digest (LIST-SHARE-3).
 - The share files resolve in the checkout (LIST-SHARE-2).
 
-`t/ci/install.t` builds the distribution with
+`t/scripts/install.t` builds the distribution with
 `scripts/dist --out <temporary directory>`, installs it into a temporary prefix,
 and resolves the share path there (LIST-SHARE-2). It sits outside `t/fuguseed/`,
-as plan 003 states.
+because `.toolingrc` names `t/fuguseed` alone in `dist.testdir`, and
+`mk/local.mk` names `t/scripts/*.t` in `TEST_GLOBS`.
 
 `t/fuguseed/words-program.t` runs the program as a child and holds:
 

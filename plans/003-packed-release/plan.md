@@ -18,8 +18,8 @@ on core Perl alone.
 
 The scaffold expects the packer. `mk/local.mk` names `scripts/pack` as the
 `DIST` command of `make dist`, and `release.yml` passes `assets: fuguseed-qr` to
-the shared release workflow of Tooling. This plan fills the two slots and
-changes neither file.
+the shared release workflow of Tooling. This plan fills the two slots. It
+changes no line of `release.yml`, and it adds one test glob to `mk/local.mk`.
 
 ## Constraints that shape the design
 
@@ -45,9 +45,11 @@ modules only, and v5.34, like `scripts/deps`.
 
 **The pack test is checkout-only.** `.toolingrc` sets `dist.testdir` to
 `t/fuguseed`, so `scripts/dist` ships each test of that directory in the
-tarball. A test that runs a make target or a script of this repository lives in
-`t/ci/`, which the tarball excludes. `mk/local.mk` names both directories in
-`TEST_GLOBS`, so `make test` runs each test.
+tarball. A test of a script of this repository lives in `t/scripts/`, which
+`dist.testdir` does not name, so the tarball excludes it. `t/ci/` holds the
+synced tests that a pack of Tooling owns. `mk/local.mk` names
+`t/fuguseed/*.t t/ci/*.t` in `TEST_GLOBS` today, so this plan adds
+`t/scripts/*.t` there.
 
 **The shebang is the base perl.** The packed file starts with `#!/usr/bin/perl`.
 The air-gapped computer runs its base perl, and D-07 allows no install step
@@ -60,16 +62,17 @@ the asset that `release.yml` names and lists it in the signed `SHA256` manifest
 
 ## Files
 
-| File             | Change                                              |
-| ---------------- | --------------------------------------------------- |
-| `scripts/pack`   | The packer                                          |
-| `t/ci/pack.t`    | The tests below                                     |
-| `spec/STATUS.md` | QR-PACK and SEC-RELEASE `done`, TEST-PACK `partial` |
+| File               | Change                                              |
+| ------------------ | --------------------------------------------------- |
+| `scripts/pack`     | The packer                                          |
+| `t/scripts/pack.t` | The tests below                                     |
+| `mk/local.mk`      | `t/scripts/*.t` joins `TEST_GLOBS`                  |
+| `spec/STATUS.md`   | QR-PACK and SEC-RELEASE `done`, TEST-PACK `partial` |
 
 ## Tests
 
-`t/ci/pack.t` runs `scripts/pack --version 0.0.0 --out <temporary directory>`
-and holds:
+`t/scripts/pack.t` runs
+`scripts/pack --version 0.0.0 --out <temporary directory>` and holds:
 
 - The packed file runs with an `@INC` of the archlib and the privlib of the
   running perl alone. Test vector 4 is the standard input. Its output equals the

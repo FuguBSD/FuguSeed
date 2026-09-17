@@ -52,6 +52,12 @@ one line from standard input before the next zone. At the end of the input, the
 remaining zones print without a pause (QR-TEXT-5). The tests pipe the 12 words
 and nothing else, so every zone prints at once.
 
+**A fixture ships by name.** `scripts/dist` copies each file that matches
+`\.t\z` from a test directory, so it copies no fixture. `.toolingrc` holds one
+`dist.share-extra` line per fixture file, and `scripts/dist` copies each one
+under its own path. A shipped test then reads its fixture from a tarball. The
+key names a file: `scripts/dist` drops a directory.
+
 ## The interface contract
 
 The program takes no option and no argument. The first line of standard input
@@ -78,6 +84,7 @@ as `.`. Exit 0 on success, 1 on a failure, and 2 on a usage error.
 | `t/fuguseed/qr-program.t`       | The program tests below                                         |
 | `t/fuguseed/man.t`              | `mandoc -Tlint` on each page under `man` (TEST-MANUAL)          |
 | `t/fuguseed/fixtures/qr/`       | The picture and the text fixtures of test vector 4              |
+| `.toolingrc`                    | One `dist.share-extra` line per fixture file                    |
 | `spec/STATUS.md`                | The cited units                                                 |
 
 Each constant of the QR standard sits at the top of the module that uses it. A
