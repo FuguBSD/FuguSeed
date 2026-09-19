@@ -70,8 +70,8 @@ one use (D-03).
   `docs/research/`, a file under `ports/`, and the rule that names the words.
 - **OVW-VOCABULARY-4** — The artifacts call the machine that accepts the 12
   words "the device". They call the three dice YELLOW, BLUE, and RED. They use
-  "dice" for one die and for several. The device is the object that FuguPass
-  calls a signer. The seed words are the BIP39 mnemonic of FuguPass.
+  "dice" for one die and for several. The seed words are the BIP39 mnemonic of
+  FuguPass.
 
 <a id="ovw-risks"></a>
 
