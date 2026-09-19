@@ -3,7 +3,7 @@
 ## Status
 
 Proposed. It can land now: the six modules that the packer lists exist. Plan 004
-waits on it for TEST-PACK-1 and TEST-PACK-2.
+waits on it for the `t/scripts/*.t` glob of `TEST_GLOBS`.
 
 Implements: QR-PACK, SEC-RELEASE. Implements: TEST-PACK without TEST-PACK-3.
 

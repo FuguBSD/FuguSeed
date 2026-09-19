@@ -2,8 +2,9 @@
 
 ## Status
 
-Proposed. No part lands now. It waits on plan 003 for TEST-PACK-1 and
-TEST-PACK-2. The `man` target and the mandoc test exist already.
+Proposed. No part lands now. It waits on plan 003 for the `t/scripts/*.t` glob
+of `TEST_GLOBS`. The new test `t/scripts/install.t` runs through that glob. The
+`man` target and the mandoc test exist already.
 
 Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
 WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE without

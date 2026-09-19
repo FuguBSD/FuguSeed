@@ -150,20 +150,81 @@ is( "@absent", q{}, 'the scan covers the program and its six modules' );
 #	of App::FuguSeed::List holds words such as "open" and "fork",
 #	and the module holds the list in such a heredoc. A "#" after
 #	a "$" is the last index of an array, and not a comment.
+#
+#	The strip knows three quote-like operators: q, qq and qw,
+#	with braces or with parentheses. It knows a match after =~,
+#	!~ or split. An apostrophe in another form, such as s///,
+#	pairs with a later apostrophe, and the pair deletes the code
+#	between the two. The function dies on a form that it cannot
+#	parse, because such a form can hide code from the scan
+#	below.
 sub _code ($text)
 {
 	$text =~ s/<<'(\w+)';.*?^\1$//msg;
-	$text =~
-	    s{'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|(?<!\$)\#[^\n]*}{}g;
+	die "_code: the text holds another heredoc\n"
+	    if $text =~ / << ~? ['"A-Za-z_] /x;
+
+	$text =~ s{
+		  ' [^'\\]* (?: \\. [^'\\]* )* '
+		| " [^"\\]* (?: \\. [^"\\]* )* "
+		| (?<! [\$\@\%&>] ) \b q [qw]? \s* \{ [^{}]* \}
+		| (?<! [\$\@\%&>] ) \b q [qw]? \s* \( [^()]* \)
+		| (?: =~ | !~ | \b split ) \K \s* m? / [^/\n]* / \w*
+		| (?<! \$ ) \# [^\n]*
+	}{}gx;
+
+	my $form = _unknown($text);
+	die "_code: the text holds $form\n" if defined $form;
 
 	return $text;
 }
 
+# _unknown($code):
+#	The name of the first form of the stripped $code that _code
+#	cannot parse, or undef. Each quote character of a known form
+#	leaves with that form, so a quote character that stays names
+#	a form that the strip missed.
+sub _unknown ($code)
+{
+	return 'a quote character' if $code =~ /['"]/;
+	return 'a quote-like operator'
+	    if $code =~ m{
+		    (?<! [\$\@\%&>-] )
+		    \b (?: qq | qr | qx | qw | q | m | s | tr | y )
+		    \s* [(\{\[<|!\#'"/]
+	    }x;
+
+	# The slash of a division and the slash of the defined-or
+	# operator follow a term, between two spaces. Each other
+	# slash can open a match.
+	( my $rest = $code ) =~ s{ (?<= [\w\)\]\}] ) [ ] //? [ ] }{}gx;
+	return 'a slash' if $rest =~ m{/};
+
+	return;
+}
+
+# The guard of _code (SEC-TRUST-3). An apostrophe in a form that the
+# strip does not know pairs with a later apostrophe, and the pair
+# deletes the code between the two.
+like( _code("my \$x = q{don't};\nopen my \$fh, '<', \$path;\n"),
+	qr/open/, '_code keeps the code after an apostrophe in q{}' );
+like( _code("\$x =~ /can't/;\nopen my \$fh, '<', \$path;\n"),
+	qr/open/, '_code keeps the code after an apostrophe in a match' );
+ok( !eval { _code('$x =~ s/a/b/;'); 1 }, '_code refuses a substitution' );
+ok( !eval { _code("my \$x = <<\"HERE\";\nHERE\n"); 1 },
+	'_code refuses a double-quoted heredoc' );
+
 # $contact:
-#	Each builtin that opens a file or a directory, that changes
-#	the file system, that starts a process, or that reaches the
-#	network. SEC-TRUST-3 forbids each one.
+#	Each builtin of the file system, of process control, of the
+#	user information and the group information, of the network,
+#	and of System V IPC. The list holds syscall as well, because
+#	syscall calls any system call. The program must contact
+#	nothing but its three standard streams, so SEC-TRUST-3
+#	forbids each one. A sigil before the name makes it a
+#	variable, and a fat comma after it makes it a key. Neither
+#	one is a call.
 my $contact = qr{
+	(?<! [\$\@\%] )
 	\b(?: open | sysopen | opendir | readdir | closedir | rewinddir
 	    | seekdir | telldir | glob | dbmopen | unlink | rename | link
 	    | symlink | readlink | mkdir | rmdir | chdir | chroot | chmod
@@ -171,12 +232,16 @@ my $contact = qr{
 	    | system | exec | fork | qx | readpipe | pipe | wait | waitpid
 	    | kill | syscall
 	    | socket | socketpair | bind | connect | listen | accept
-	    | shutdown | recv | send | gethostbyname | getservbyname )\b
+	    | shutdown | recv | send | gethostbyname | getservbyname
+	    | getpwnam | getpwuid | getgrnam | getgrgid | getlogin
+	    | msgget | semget | shmget )\b
+	(?! \s* => )
 }x;
 
 # $file_test:
 #	A file test operator, such as -e or -r. Each one reads the
-#	file system (SEC-TRUST-3).
+#	file system, and -t reads the state of a filehandle
+#	(SEC-TRUST-3).
 my $file_test = qr{ (?<! [\w\$] ) - [rwxoRWXOezsfdlpSbctugkTBAMC] \b }x;
 
 # $environment:
@@ -184,10 +249,27 @@ my $file_test = qr{ (?<! [\w\$] ) - [rwxoRWXOezsfdlpSbctugkTBAMC] \b }x;
 #	the getenv function of POSIX (SEC-TRUST-3).
 my $environment = qr{ \b(?: ENV | getenv )\b }x;
 
+# $read:
+#	A read of another handle than standard input: the diamond
+#	operator in each of its forms, and readline with another
+#	handle. The diamond operator opens each file that @ARGV
+#	names, and bin/fuguseed-qr passes @ARGV to run (SEC-TRUST-3).
+my $read = qr{
+	<> | < (?! STDIN > ) \$? \w+ >
+	| \b readline \b (?! \s* \(? \s* \*? STDIN \b )
+}x;
+
 # $dynamic:
-#	A load of a file that a variable names, such as require $path
-#	(SEC-TRUST-3).
-my $dynamic = qr{ \b(?: do | require ) \s+ [\$\@] }x;
+#	A load of a file, such as require $path or require './x.pl'.
+#	The strip above deletes the path of a literal load, so the
+#	pattern takes each do and each require that is not a block,
+#	a version, or a bareword module (SEC-TRUST-3).
+my $dynamic = qr{
+	(?<! [\$\@\%>] ) \b(?: do | require )\b
+	(?! \s* \{ )
+	(?! \s+ v? [0-9] )
+	(?! \s+ [A-Za-z_] [\w:]* \s* ; )
+}x;
 
 for my $path ( sort @sources ) {
 	my $code = _code( _slurp($path) );
@@ -198,6 +280,7 @@ for my $path ( sort @sources ) {
 	push @hits, 'backtick'  if $code =~ /[`]/;
 	push @hits, 'ENV'       if $code =~ $environment;
 	push @hits, 'file test' if $code =~ $file_test;
+	push @hits, 'read'      if $code =~ $read;
 	push @hits, 'load'      if $code =~ $dynamic;
 	is( "@hits", q{}, "$path contacts nothing but its three streams" );
 

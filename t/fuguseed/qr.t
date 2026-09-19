@@ -297,21 +297,49 @@ is_deeply(
 is( scalar( grep { $_ } @counts ), 25,
 	'each zone count equals the count in the matrix' );
 
+# The keyboard of the pause below. Each read counts the zone views
+# on the screen at that moment, so the counts hold the order of the
+# reads and the views. The first read takes the 12 words, before any
+# view. Each later read follows one more view (QR-TEXT-5).
+package Keyboard {
+
+	sub TIEHANDLE ( $class, $lines, $screen, $reads )
+	{
+		return bless {
+			lines  => $lines,
+			screen => $screen,
+			reads  => $reads,
+		}, $class;
+	}
+
+	sub READLINE ($self)
+	{
+		my @views = ${ $self->{screen} } =~ /^[A-E]-[1-5]$/mg;
+		push @{ $self->{reads} }, scalar @views;
+
+		return shift @{ $self->{lines} };
+	}
+}
+
 # QR-TEXT-5: the program reads one line of standard input between
-# two zone views. The input below holds one line for each of the 24
-# pauses, and one line after them. A run leaves that last line, and a
-# run without the pause leaves every line.
-my $typed = join "\n", $VECTOR{4}{words}, ( map {"pause $_"} 1 .. 24 ),
-    'rest', q{};
-open my $keyboard, '<', \$typed or BAIL_OUT("the input handle: $!");
+# two zone views. The input below holds the 12 words, one line for
+# each of the 24 pauses, and one line after them. A run leaves that
+# last line. A run without the pause reads the 12 words alone, so it
+# leaves the 24 pause lines as well.
+my $typed =
+    [ map {"$_\n"} $VECTOR{4}{words}, ( map {"pause $_"} 1 .. 24 ), 'rest' ];
 my $printed = q{};
 open my $screen, '>', \$printed or BAIL_OUT("the output handle: $!");
+my @reads;
 {
-	local *STDIN  = $keyboard;
+	local *STDIN;
+	tie *STDIN, 'Keyboard', $typed, \$printed, \@reads;
 	local *STDOUT = $screen;
 	App::FuguSeed::QR->run();
 }
-my $left = do { local $/ = undef; <$keyboard> };
-is( $left, "rest\n", 'the program reads one line between two zone views' );
+is( join( q{}, @{$typed} ), "rest\n",
+	'the program leaves the last line of the input' );
+is_deeply( \@reads, [ 0 .. 24 ],
+	'one read of standard input sits between two zone views' );
 
 done_testing();
