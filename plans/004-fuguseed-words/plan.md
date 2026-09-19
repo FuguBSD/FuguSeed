@@ -7,13 +7,14 @@ mandoc test. It also waits on plan 003 for TEST-PACK-1 and TEST-PACK-2.
 
 Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
 WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE without
-LIST-SHARE-1. Implements: SEC-TRUST, TEST-PACK.
+LIST-SHARE-1. Implements: SEC-TRUST without SEC-TRUST-2 and SEC-TRUST-3.
+Implements: TEST-PACK without TEST-PACK-1 and TEST-PACK-2.
 
 Of LIST-SHARE, SEC-TRUST, and TEST-PACK, this plan lands LIST-SHARE-2 and
 LIST-SHARE-3, SEC-TRUST-1, and TEST-PACK-3. The share file holds LIST-SHARE-1
-already, and plan 002 and plan 003 land the other rules of those units. Plan 002
-lands WORDS-MANUAL-6, the `man` target, so this plan lands the other five rules
-of that unit.
+already, and plan 002 and plan 003 land the other rules of SEC-TRUST and
+TEST-PACK. Plan 002 lands WORDS-MANUAL-6, the `man` target, so this plan lands
+the other five rules of that unit.
 
 ## Purpose
 
