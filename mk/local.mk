@@ -10,7 +10,7 @@ PERL_SRC_DIRS	= lib scripts
 DIST		= scripts/pack
 
 # The full test tier set of make test
-TEST_GLOBS	= t/fuguseed/*.t t/ci/*.t
+TEST_GLOBS	= t/fuguseed/*.t t/scripts/*.t t/ci/*.t
 
 # make man renders each manual page with mandoc (WORDS-MANUAL-6).
 # t/fuguseed/man.t lints the same pages on each test run.

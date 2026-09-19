@@ -1,0 +1,203 @@
+#!/usr/bin/env perl
+# $OpenBSD$
+#
+# Copyright (c) 2026 Dick Olsson <hi@senzilla.io>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+# pack: write the packed fuguseed-qr file (QR-PACK).
+#
+# usage: pack [--version X.Y.Z] [--out DIR]
+#
+# The script takes the two options of scripts/dist. --out names the
+# output directory, and build is its default. It runs scripts/dist
+# with the same two values, and it packs the tarball that the build
+# writes. The build derives the version from the latest tag when the
+# value is empty, so no second copy of the tag logic exists here. The
+# tarball holds the modules with the $VERSION of the tag, so the
+# packed file names its version.
+#
+# The script reads the tarball path from "Built <path>", the last
+# line of the build. It extracts the tarball under the output
+# directory, it packs from the extracted tree, and it removes the
+# tree.
+#
+# The packed file holds the six modules of the program, in dependency
+# order, and the program body last. Before each module the script
+# writes a BEGIN block that marks the module as loaded, so a use line
+# of a later module opens no file. A block around each module keeps
+# the package and the file variables of one module apart from the
+# next. The file holds no timestamp and no path, so two packs of one
+# tree are byte-equal (QR-PACK-3).
+#
+# The script is a bootstrap script of this repository: core modules
+# only. It runs scripts/dist with the perl that runs it, and that
+# perl must be v5.36 or later.
+
+use v5.34;
+use warnings;
+use experimental 'signatures';
+no feature qw(indirect multidimensional bareword_filehandles);
+
+use File::Path   qw(make_path remove_tree);
+use File::Spec   ();
+use Getopt::Long qw(GetOptions);
+
+# DIST:
+#	The build script. It reads .toolingrc of the working
+#	directory, so pack runs at the repository root, as make dist
+#	does.
+use constant DIST => 'scripts/dist';
+
+# MODULES:
+#	The six modules of the packed file, in dependency order
+#	(QR-PROGRAM-6, LIST-MODULE-1). The script packs these and no
+#	other module (QR-PACK-2).
+use constant MODULES => [
+	'App/FuguSeed/List.pm',      'App/FuguSeed/Mnemonic.pm',
+	'App/FuguSeed/Codewords.pm', 'App/FuguSeed/Matrix.pm',
+	'App/FuguSeed/Text.pm',      'App/FuguSeed/QR.pm',
+];
+
+# PROGRAM and OUTPUT:
+#	The program body in the tarball, and the name of the packed
+#	file. release.yml names that file as the one asset of the
+#	release (SEC-RELEASE-1).
+use constant PROGRAM => 'bin/fuguseed-qr';
+use constant OUTPUT  => 'fuguseed-qr';
+
+# HEADER:
+#	The first lines of the packed file. The shebang is the base
+#	perl: the air-gapped computer runs the perl that it has, and
+#	it installs nothing (D-07).
+use constant HEADER => <<'HEADER';
+#!/usr/bin/perl
+# fuguseed-qr: print a Standard SeedQR as text, zone by zone.
+#
+# scripts/pack of FuguSeed writes this file from the modules of that
+# repository, and the release publishes it beside the tarballs. Do
+# not edit this file. Edit the modules, and pack them again.
+#
+# The file holds the program and the six modules that it loads. Each
+# module keeps its source, under a BEGIN block that marks the module
+# as loaded. Digest::SHA is the one module that the file loads, and
+# every perl since 5.10 holds it.
+#
+# The file opens no file, it starts no process, and it reads no
+# environment variable. The three standard streams are its one
+# contact with the computer. The 12 seed words enter on standard
+# input, and they leave on no channel.
+
+HEADER
+
+my $version = q{};
+my $out     = 'build';
+
+GetOptions(
+	'version=s' => \$version,
+	'out=s'     => \$out,
+) or die "usage: pack [--version X.Y.Z] [--out DIR]\n";
+
+# _read($path):
+#	The whole file as text.
+sub _read ($path)
+{
+	open my $fh, '<', $path or die "pack: read $path: $!\n";
+	local $/ = undef;
+	my $text = <$fh>;
+	close $fh or die "pack: close $path: $!\n";
+
+	return $text;
+}
+
+# _build($version, $out):
+#	Run the build with the two values, and give the path of the
+#	tarball that it writes. The build reports each line that it
+#	writes, so make dist names the tarball as well as the packed
+#	file.
+sub _build ( $version, $out )
+{
+	open my $ph, '-|', $^X, DIST, '--version', $version, '--out', $out
+	    or die 'pack: cannot run ' . DIST . ": $!\n";
+	my @line = <$ph>;
+	close $ph
+	    or die 'pack: ' . DIST . ' exited ' . ( $? >> 8 ) . "\n";
+
+	print @line or die "pack: cannot report the build: $!\n";
+	chomp @line;
+
+	my $built = @line ? $line[-1] : q{};
+	$built =~ /^Built[ ](.+)\z/a
+	    or die 'pack: ' . DIST . " named no tarball\n";
+
+	return $1;
+}
+
+# _extract($tarball, $temp):
+#	Extract $tarball under the directory $temp, and give the path
+#	of the tree that it holds.
+sub _extract ( $tarball, $temp )
+{
+	remove_tree($temp);
+	make_path($temp);
+	-d $temp or die "pack: cannot make $temp\n";
+
+	my $status = system 'tar', '-xzf', $tarball, '-C', $temp;
+	$status == 0
+	    or die 'pack: tar exited ' . ( $status >> 8 ) . "\n";
+
+	my ($name) = $tarball =~ m{([^/]+)[.]tar[.]gz\z}a
+	    or die "pack: '$tarball' is no tarball\n";
+	my $tree = File::Spec->catdir( $temp, $name );
+	-d $tree or die "pack: the tarball holds no $name\n";
+
+	return $tree;
+}
+
+# _write($file, $tree):
+#	Write the packed file from the extracted tree $tree. The
+#	program body comes last, under package main, without the
+#	shebang of the source: the packed file holds its own.
+sub _write ( $file, $tree )
+{
+	open my $fh, '>', $file or die "pack: write $file: $!\n";
+	print {$fh} HEADER or die "pack: write $file: $!\n";
+
+	for my $module ( @{ +MODULES } ) {
+		my $source =
+		    _read( File::Spec->catfile( $tree, 'lib', $module ) );
+		print {$fh} "BEGIN { \$INC{'$module'} = __FILE__; }\n",
+		    "{\n", $source, "}\n\n"
+		    or die "pack: write $file: $!\n";
+	}
+
+	my $body = _read( File::Spec->catfile( $tree, PROGRAM ) );
+	$body =~ s/\A\#![^\n]*\n//;
+	print {$fh} "package main;\n\n", $body
+	    or die "pack: write $file: $!\n";
+
+	close $fh or die "pack: close $file: $!\n";
+	chmod 0755, $file or die "pack: chmod $file: $!\n";
+
+	return;
+}
+
+my $tarball = _build( $version, $out );
+my $temp    = File::Spec->catdir( $out, 'pack' );
+my $tree    = _extract( $tarball, $temp );
+my $file    = File::Spec->catfile( $out, OUTPUT );
+
+_write( $file, $tree );
+remove_tree($temp);
+
+say "Packed $file";
