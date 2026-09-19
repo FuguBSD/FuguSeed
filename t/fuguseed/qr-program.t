@@ -158,20 +158,27 @@ is( "@absent", q{}, 'the scan covers the program and its six modules' );
 #	between the two. The function dies on a form that it cannot
 #	parse, because such a form can hide code from the scan
 #	below.
+#
+#	The first branch of the strip keeps the marker of a heredoc,
+#	and each guard below reads the stripped code. A marker in a
+#	comment or in a string goes away with the comment or the
+#	string, and it stops no scan.
 sub _code ($text)
 {
 	$text =~ s/<<'(\w+)';.*?^\1$//msg;
-	die "_code: the text holds another heredoc\n"
-	    if $text =~ / << ~? ['"A-Za-z_] /x;
 
 	$text =~ s{
-		  ' [^'\\]* (?: \\. [^'\\]* )* '
+		  ( << ~? (?: ' \w+ ' | " \w+ " ) )
+		| ' [^'\\]* (?: \\. [^'\\]* )* '
 		| " [^"\\]* (?: \\. [^"\\]* )* "
 		| (?<! [\$\@\%&>] ) \b q [qw]? \s* \{ [^{}]* \}
 		| (?<! [\$\@\%&>] ) \b q [qw]? \s* \( [^()]* \)
 		| (?: =~ | !~ | \b split ) \K \s* m? / [^/\n]* / \w*
 		| (?<! \$ ) \# [^\n]*
-	}{}gx;
+	}{ $1 // q{} }gex;
+
+	die "_code: the text holds another heredoc\n"
+	    if $text =~ / << ~? ['"A-Za-z_] /x;
 
 	my $form = _unknown($text);
 	die "_code: the text holds $form\n" if defined $form;
@@ -205,36 +212,51 @@ sub _unknown ($code)
 
 # The guard of _code (SEC-TRUST-3). An apostrophe in a form that the
 # strip does not know pairs with a later apostrophe, and the pair
-# deletes the code between the two.
+# deletes the code between the two. Each refusal names its path, so
+# one path cannot stand for another.
 like( _code("my \$x = q{don't};\nopen my \$fh, '<', \$path;\n"),
 	qr/open/, '_code keeps the code after an apostrophe in q{}' );
 like( _code("\$x =~ /can't/;\nopen my \$fh, '<', \$path;\n"),
 	qr/open/, '_code keeps the code after an apostrophe in a match' );
-ok( !eval { _code('$x =~ s/a/b/;'); 1 }, '_code refuses a substitution' );
-ok( !eval { _code("my \$x = <<\"HERE\";\nHERE\n"); 1 },
+like( _code("# the marker <<\"HERE\" of a heredoc\nopen my \$fh;\n"),
+	qr/open/, '_code takes a heredoc marker in a comment' );
+like( _code("my \$x = \"<<HERE\";\nopen my \$fh;\n"),
+	qr/open/, '_code takes a heredoc marker in a string' );
+
+eval { _code('$x =~ s/a/b/;') };
+like( $@, qr/\A_code: the text holds a quote-like operator$/,
+	'_code refuses a substitution' );
+eval { _code("my \$x = <<\"HERE\";\nHERE\n") };
+like( $@, qr/\A_code: the text holds another heredoc$/,
 	'_code refuses a double-quoted heredoc' );
 
 # $contact:
 #	Each builtin of the file system, of process control, of the
 #	user information and the group information, of the network,
 #	and of System V IPC. The list holds syscall as well, because
-#	syscall calls any system call. The program must contact
-#	nothing but its three standard streams, so SEC-TRUST-3
-#	forbids each one. A sigil before the name makes it a
-#	variable, and a fat comma after it makes it a key. Neither
-#	one is a call.
+#	syscall calls any system call. It holds eof, because eof()
+#	and eof(ARGV) open the next file of @ARGV. It holds flock,
+#	fcntl and ioctl, because each one reaches past the bytes of
+#	a handle. The program must contact nothing but its three
+#	standard streams, so SEC-TRUST-3 forbids each one. A sigil
+#	before the name makes it a variable, and a fat comma after it
+#	makes it a key. Neither one is a call.
 my $contact = qr{
 	(?<! [\$\@\%] )
 	\b(?: open | sysopen | opendir | readdir | closedir | rewinddir
 	    | seekdir | telldir | glob | dbmopen | unlink | rename | link
 	    | symlink | readlink | mkdir | rmdir | chdir | chroot | chmod
-	    | chown | utime | truncate | umask | stat | lstat
+	    | chown | utime | truncate | umask | stat | lstat | eof
+	    | flock | fcntl | ioctl
 	    | system | exec | fork | qx | readpipe | pipe | wait | waitpid
 	    | kill | syscall
 	    | socket | socketpair | bind | connect | listen | accept
-	    | shutdown | recv | send | gethostbyname | getservbyname
-	    | getpwnam | getpwuid | getgrnam | getgrgid | getlogin
-	    | msgget | semget | shmget )\b
+	    | shutdown | recv | send | getsockname | getpeername
+	    | gethostbyname | gethostbyaddr | getservbyname
+	    | getpwnam | getpwuid | getpwent | getgrnam | getgrgid
+	    | getgrent | getlogin
+	    | msgget | msgsnd | msgrcv | semget | semop
+	    | shmget | shmread | shmwrite )\b
 	(?! \s* => )
 }x;
 
@@ -271,18 +293,117 @@ my $dynamic = qr{
 	(?! \s+ [A-Za-z_] [\w:]* \s* ; )
 }x;
 
-for my $path ( sort @sources ) {
-	my $code = _code( _slurp($path) );
-
-	# SEC-TRUST-3: the three standard streams are the one contact
-	# of the program with the computer.
+# _hits($code):
+#	The name of each contact of the stripped $code with the
+#	computer, or an empty list (SEC-TRUST-3). The scan of the
+#	sources and the self-test below call this one function, so
+#	each pattern above has one place only.
+sub _hits ($code)
+{
 	my @hits = $code =~ /($contact)/g;
 	push @hits, 'backtick'  if $code =~ /[`]/;
 	push @hits, 'ENV'       if $code =~ $environment;
 	push @hits, 'file test' if $code =~ $file_test;
 	push @hits, 'read'      if $code =~ $read;
 	push @hits, 'load'      if $code =~ $dynamic;
-	is( "@hits", q{}, "$path contacts nothing but its three streams" );
+
+	return @hits;
+}
+
+# _refusal($sample):
+#	The reason that the scan refuses the code $sample: the hits
+#	of _hits, or the message of _code for a form that _code
+#	cannot parse. The reason is empty for code that the scan
+#	accepts.
+sub _refusal ($sample)
+{
+	my @hits = eval { _hits( _code($sample) ) };
+	return $@ if $@;
+
+	return join q{ }, @hits;
+}
+
+# The self-test of the patterns (SEC-TRUST-3). The seven sources are
+# clean, so each scan assertion below passes with no hit. These two
+# tables prove that each pattern fires on the code that it names, and
+# that it stays quiet on the code that it does not name. Delete one
+# name of $contact, or one arm of $read, and a row here fails.
+my @caught = (
+	[ q{open my $fh, '<', $path;},          'open' ],
+	[ q{sysopen my $fh, $path, 0;},         'sysopen' ],
+	[ q{system 'ls';},                      'system' ],
+	[ q{exec 'ls';},                        'exec' ],
+	[ q{my $pid = fork;},                   'fork' ],
+	[ q{my $out = `ls`;},                   'backtick' ],
+	[ q{my $out = qx;ls;},                  'qx' ],
+	[ q{my $out = readpipe $command;},      'readpipe' ],
+	[ q{my @file = glob $pattern;},         'glob' ],
+	[ q{socket my $s, 2, 1, 6;},            'socket' ],
+	[ q{syscall 20, $buffer;},              'syscall' ],
+	[ q{flock $fh, 2;},                     'flock' ],
+	[ q{fcntl $fh, 1, 0;},                  'fcntl' ],
+	[ q{ioctl $fh, 21505, $buffer;},        'ioctl' ],
+	[ q{my $uid = getpwnam 'root';},        'getpwnam' ],
+	[ q{my @user = getpwent;},              'getpwent' ],
+	[ q{my @group = getgrent;},             'getgrent' ],
+	[ q{my $user = getlogin;},              'getlogin' ],
+	[ q{my $host = gethostbyaddr $a, 2;},   'gethostbyaddr' ],
+	[ q{my $me = getsockname $s;},          'getsockname' ],
+	[ q{my $peer = getpeername $s;},        'getpeername' ],
+	[ q{my $id = msgget 1, 0;},             'msgget' ],
+	[ q{msgsnd $id, $message, 0;},          'msgsnd' ],
+	[ q{msgrcv $id, $buffer, 8, 0, 0;},     'msgrcv' ],
+	[ q{semop $id, $operation;},            'semop' ],
+	[ q{shmread $id, $buffer, 0, 8;},       'shmread' ],
+	[ q{shmwrite $id, $buffer, 0, 8;},      'shmwrite' ],
+	[ q{my $home = $ENV{HOME};},            'ENV' ],
+	[ q{my @value = @ENV{qw(A B)};},        'ENV' ],
+	[ q{my @name = keys %ENV;},             'ENV' ],
+	[ q{my $home = POSIX::getenv('HOME');}, 'ENV' ],
+	[ q{my $there = -e $path;},             'file test' ],
+	[ q{my $line = <>;},                    'read' ],
+	[ q{my $line = <ARGV>;},                'read' ],
+	[ q{my $line = <$fh>;},                 'read' ],
+	[ q{my $line = readline ARGV;},         'read' ],
+	[ q{last if eof;},                      'eof' ],
+	[ q{last if eof(ARGV);},                'eof' ],
+	[ q{require './x.pl';},                 'load' ],
+	[ q{do './x.pl';},                      'load' ],
+	[ q{require $path;},                    'load' ],
+);
+
+my @clean = (
+	q{my $line = readline STDIN;},
+	q{my $line = <STDIN>;},
+	q{require Digest::SHA;},
+	q{require v5.34;},
+	q{use v5.34;},
+	q{my $x = do { 1 };},
+	q{my $link = 1;},
+	q{my $stat = 1;},
+	q{my $send = 1;},
+	q{my %pair = ( open => 1 );},
+	q{my @row = (1); my $last = $#row;},
+	q{my $mask = 1 << 3;},
+);
+
+for my $case (@caught) {
+	my ( $sample, $reason ) = @{$case};
+	like( _refusal($sample), qr/\Q$reason\E/,
+		"the scan catches $sample" );
+}
+
+for my $sample (@clean) {
+	is( _refusal($sample), q{}, "the scan takes $sample" );
+}
+
+for my $path ( sort @sources ) {
+	my $code = _code( _slurp($path) );
+
+	# SEC-TRUST-3: the three standard streams are the one contact
+	# of the program with the computer.
+	is( join( q{ }, _hits($code) ),
+		q{}, "$path contacts nothing but its three streams" );
 
 	# QR-PROGRAM-5: a source loads Digest::SHA, a pragma, and a
 	# module of this repository. It loads nothing else.
