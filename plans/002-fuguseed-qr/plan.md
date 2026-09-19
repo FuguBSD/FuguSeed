@@ -2,9 +2,9 @@
 
 ## Status
 
-Proposed. It waits on plan 001 for the list module. Plan 003 waits on it for the
-modules that the packer lists. Plan 004 waits on it for the `man` target and the
-mandoc test.
+Proposed. It can land now, because `App::FuguSeed::List` exists. Plan 003 waits
+on it for the modules that the packer lists. Plan 004 waits on it for the `man`
+target and the mandoc test.
 
 Implements: QR-PROGRAM, QR-MNEMONIC, QR-CODEWORDS, QR-MATRIX, QR-TEXT,
 QR-MANUAL, TEST-QR, TEST-MANUAL, SEC-CHANNELS. Implements: SEC-TRUST without
