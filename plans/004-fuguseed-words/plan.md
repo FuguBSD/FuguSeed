@@ -6,8 +6,8 @@ Proposed. No part lands now. It waits on plan 002 for the `man` target and the
 mandoc test. It also waits on plan 003 for TEST-PACK-1 and TEST-PACK-2.
 
 Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
-WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE, SEC-TRUST,
-TEST-PACK.
+WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE without
+LIST-SHARE-1. Implements: SEC-TRUST, TEST-PACK.
 
 Of LIST-SHARE, SEC-TRUST, and TEST-PACK, this plan lands LIST-SHARE-2 and
 LIST-SHARE-3, SEC-TRUST-1, and TEST-PACK-3. The share file holds LIST-SHARE-1

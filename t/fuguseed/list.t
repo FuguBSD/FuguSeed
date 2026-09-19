@@ -77,11 +77,21 @@ is( $unknown, undef, 'an unknown word gives undef' );
 my $none = $class->index(undef);
 is( $none, undef, 'an absent word gives undef' );
 
+# The ERRORS section of List.pod: the signature of each method
+# requires one argument, so a call without one dies.
+eval { $class->word };
+like( $@, qr/Too few arguments/, 'word dies on a call with no argument' );
+
+eval { $class->index };
+like( $@, qr/Too few arguments/, 'index dies on a call with no argument' );
+
 # LIST-MODULE-2: scripts/pack embeds the module in fuguseed-qr, so
 # the module loads no module from outside this repository but the
 # core of perl 5.34. Digest::SHA, the one module that this test adds,
 # is core as well. The child gets no PERL5LIB and no PERL5OPT of this
-# environment, because either one writes a false %INC entry.
+# environment. PERL5OPT loads a module through -M, and that module
+# writes a false %INC entry. PERL5LIB writes no entry: it adds a
+# directory to @INC, so a module can come from outside this checkout.
 delete local @ENV{qw(PERL5LIB PERL5OPT)};
 
 open my $ph, '-|', $^X, '-Ilib', "-M$class", '-e',
@@ -90,7 +100,10 @@ open my $ph, '-|', $^X, '-Ilib', "-M$class", '-e',
 my @loaded = <$ph>;
 close $ph or BAIL_OUT("close $^X: status $?");
 chomp @loaded;
-ok( scalar @loaded, 'the module loads in a perl of its own' );
+
+( my $key = "$class.pm" ) =~ s{::}{/}g;
+my @self = grep { $_ eq $key } @loaded;
+is( scalar @self, 1, "the child perl loads $key" );
 
 my @outside;
 for my $path (@loaded) {
