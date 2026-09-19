@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed. It waits on plan 002 for the modules that the packer lists. Plan 004
+Proposed. It can land now: the six modules that the packer lists exist. Plan 004
 waits on it for TEST-PACK-1 and TEST-PACK-2.
 
 Implements: QR-PACK, SEC-RELEASE. Implements: TEST-PACK without TEST-PACK-3.
@@ -57,7 +57,7 @@ there.
 
 **The release needs no new wiring.** The shared `perl-release` workflow uploads
 the asset that `release.yml` names and lists it in the signed `SHA256` manifest
-(SEC-RELEASE-1). The manual of plan 002 holds the digest check step
+(SEC-RELEASE-1). The manual `fuguseed-qr(1)` holds the digest check step
 (SEC-RELEASE-2).
 
 ## Files
@@ -76,13 +76,13 @@ the asset that `release.yml` names and lists it in the signed `SHA256` manifest
 
 - The packed file runs with an `@INC` of the archlib and the privlib of the
   running perl alone. Test vector 4 is the standard input. Its output equals the
-  fixture of plan 002 (TEST-PACK-1).
+  fixture `t/fuguseed/fixtures/qr/vector4.output` (TEST-PACK-1).
 - The same run passes on `/usr/bin/perl` when that perl exists (TEST-PACK-1).
 - Every `use` and `require` line of the packed file names a pragma, a module of
   the packed set, or `Digest::SHA`. No line names a `Fugu::` module
   (TEST-PACK-2, SEC-RELEASE-3).
-- The packed file holds no `open`, `opendir`, `system`, `exec`, `fork`,
-  backtick, `qx`, or `%ENV`, like the sources in plan 002.
+- The packed file opens no file, starts no process, and reads no environment
+  variable, like the sources that `t/fuguseed/qr-program.t` scans (SEC-TRUST-3).
 - Two packs of the tree are byte-equal, and the file holds no build path
   (QR-PACK-3).
 

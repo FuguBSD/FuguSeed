@@ -43,8 +43,9 @@ C<build()> returns one array reference of 25 array references.
 =head1 ERRORS
 
 C<build()> expects the 44 codewords of App::FuguSeed::Codewords. With
-fewer codewords, the matrix holds 0 in the modules that the codewords
-do not reach.
+fewer codewords, the mask alone fills each data module that the
+codewords do not reach. Such a module is dark when the sum of its row
+and its column is even.
 
 =head1 SEE ALSO
 

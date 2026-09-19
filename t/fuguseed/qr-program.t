@@ -148,25 +148,58 @@ is( "@absent", q{}, 'the scan covers the program and its six modules' );
 #	The Perl code of $text, without the comments and the string
 #	literals. A single-quoted heredoc goes first: the word list
 #	of App::FuguSeed::List holds words such as "open" and "fork",
-#	and the module holds the list in such a heredoc.
+#	and the module holds the list in such a heredoc. A "#" after
+#	a "$" is the last index of an array, and not a comment.
 sub _code ($text)
 {
 	$text =~ s/<<'(\w+)';.*?^\1$//msg;
 	$text =~
-	    s{'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|\#[^\n]*}{}g;
+	    s{'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"|(?<!\$)\#[^\n]*}{}g;
 
 	return $text;
 }
+
+# $contact:
+#	Each builtin that opens a file or a directory, that changes
+#	the file system, that starts a process, or that reaches the
+#	network. SEC-TRUST-3 forbids each one.
+my $contact = qr{
+	\b(?: open | sysopen | opendir | readdir | closedir | rewinddir
+	    | seekdir | telldir | glob | dbmopen | unlink | rename | link
+	    | symlink | readlink | mkdir | rmdir | chdir | chroot | chmod
+	    | chown | utime | truncate | umask | stat | lstat
+	    | system | exec | fork | qx | readpipe | pipe | wait | waitpid
+	    | kill | syscall
+	    | socket | socketpair | bind | connect | listen | accept
+	    | shutdown | recv | send | gethostbyname | getservbyname )\b
+}x;
+
+# $file_test:
+#	A file test operator, such as -e or -r. Each one reads the
+#	file system (SEC-TRUST-3).
+my $file_test = qr{ (?<! [\w\$] ) - [rwxoRWXOezsfdlpSbctugkTBAMC] \b }x;
+
+# $environment:
+#	A read of the environment: %ENV, $ENV{...}, @ENV{...}, and
+#	the getenv function of POSIX (SEC-TRUST-3).
+my $environment = qr{ \b(?: ENV | getenv )\b }x;
+
+# $dynamic:
+#	A load of a file that a variable names, such as require $path
+#	(SEC-TRUST-3).
+my $dynamic = qr{ \b(?: do | require ) \s+ [\$\@] }x;
 
 for my $path ( sort @sources ) {
 	my $code = _code( _slurp($path) );
 
 	# SEC-TRUST-3: the three standard streams are the one contact
 	# of the program with the computer.
-	my @hits = $code =~ /\b(open|opendir|system|exec|fork|qx)\b/g;
-	push @hits, 'backtick' if $code =~ /[`]/;
-	push @hits, 'ENV'      if $code =~ /%ENV/;
-	is( "@hits", q{}, "$path opens no file and spawns no process" );
+	my @hits = $code =~ /($contact)/g;
+	push @hits, 'backtick'  if $code =~ /[`]/;
+	push @hits, 'ENV'       if $code =~ $environment;
+	push @hits, 'file test' if $code =~ $file_test;
+	push @hits, 'load'      if $code =~ $dynamic;
+	is( "@hits", q{}, "$path contacts nothing but its three streams" );
 
 	# QR-PROGRAM-5: a source loads Digest::SHA, a pragma, and a
 	# module of this repository. It loads nothing else.

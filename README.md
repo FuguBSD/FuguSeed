@@ -21,5 +21,6 @@ make deps-test   # install the runtime and the test dependencies
 make check       # run every gate; run it before each commit
 make test        # run every test tier
 make format-fix  # fix the Perl, Markdown, JSON and YAML formatting
+make man         # render each manual page with mandoc
 make dist        # build the release tarball and the packed fuguseed-qr file
 ```

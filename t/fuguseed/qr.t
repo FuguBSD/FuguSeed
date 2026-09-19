@@ -3,7 +3,8 @@
 # The SeedQR pipeline (TEST-QR). The tests hold the two 12-word test
 # vectors of the SeedQR specification to their digit strings, the 44
 # codewords and the matrix of test vector 4 to its reference image,
-# and the two views to their fixture.
+# the two views to their fixture, and the pause between two zone
+# views.
 #
 # The picture fixture is the reference image of test vector 4, module
 # for module. That image is mask 0, so it proves the whole pipeline
@@ -20,6 +21,7 @@ use App::FuguSeed::Codewords ();
 use App::FuguSeed::List      ();
 use App::FuguSeed::Matrix    ();
 use App::FuguSeed::Mnemonic  ();
+use App::FuguSeed::QR        ();
 use App::FuguSeed::Text      ();
 
 my $root = "$RealBin/../..";
@@ -294,5 +296,22 @@ is_deeply(
 );
 is( scalar( grep { $_ } @counts ), 25,
 	'each zone count equals the count in the matrix' );
+
+# QR-TEXT-5: the program reads one line of standard input between
+# two zone views. The input below holds one line for each of the 24
+# pauses, and one line after them. A run leaves that last line, and a
+# run without the pause leaves every line.
+my $typed = join "\n", $VECTOR{4}{words}, ( map {"pause $_"} 1 .. 24 ),
+    'rest', q{};
+open my $keyboard, '<', \$typed or BAIL_OUT("the input handle: $!");
+my $printed = q{};
+open my $screen, '>', \$printed or BAIL_OUT("the output handle: $!");
+{
+	local *STDIN  = $keyboard;
+	local *STDOUT = $screen;
+	App::FuguSeed::QR->run();
+}
+my $left = do { local $/ = undef; <$keyboard> };
+is( $left, "rest\n", 'the program reads one line between two zone views' );
 
 done_testing();
