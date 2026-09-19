@@ -29,8 +29,10 @@ manuals. Each unit that a test proves points here.
 ## The SeedQR
 
 - **TEST-QR-1** — The tests must hold the two 12-word test vectors of the SeedQR
-  specification to their digit strings. They must reject a wrong count, an
-  unknown word, and a wrong checksum.
+  specification to their digit strings. They must reject a wrong count and an
+  unknown word. For each vector, they must replace word 12 with each other word
+  of its BLUE row. They must prove that the program names word 12 of the vector
+  as the check word.
 - **TEST-QR-2** — The tests must hold the 44 codewords of test vector 4 to the
   values that the reference image of the SeedQR specification implies.
 - **TEST-QR-3** — The tests must hold the matrix of test vector 4 to the

@@ -6,8 +6,8 @@ word sheet from the official English word list, checks a built sheet, and holds
 the offline procedure in its manual. It sees no seed word. `fuguseed-qr` reads
 12 seed words and prints a Standard SeedQR as text, zone by zone, so a person
 can draw it on paper. It sees the words, so it runs on an air-gapped computer
-only. No program generates a seed word. The dice give the entropy, the paper
-holds the words, and a device that accepts BIP39 words finds the check word.
+only. No program contributes entropy to a seed word. The dice give the entropy,
+the paper holds the words, and `fuguseed-qr` finds the check word.
 
 This document is the entry point of the specification. It holds the plan
 contract, the ID conventions, and the document tables.

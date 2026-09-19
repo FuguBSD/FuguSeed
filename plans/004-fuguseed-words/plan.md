@@ -89,11 +89,10 @@ resolve through `Fugu::File->share_path`, in a checkout and after an install
 
 The procedure page follows WORDS-MANUAL-2 to WORDS-MANUAL-5. Its sections are
 the equipment and the names, the steps before the start, and how to find one
-word. Then words 1 to 11, word 12 on the device, and the steps after follow. It
-holds the WARNING of D-14 and the note on the faces 6 and 9. It holds the rule
-against a BIP39 passphrase, and the rule to select the complete word on the
-device. It ends with the pointer to `fuguseed-qr(1)` and names no software for
-the roll of the dice.
+word. Then words 1 to 11, word 12 with `fuguseed-qr`, and the steps after
+follow. It holds the WARNING of D-14 and the note on the faces 6 and 9. It holds
+the rule against a BIP39 passphrase. It ends with the pointer to
+`fuguseed-qr(1)` and names no software for the roll of the dice.
 
 ## Tests
 

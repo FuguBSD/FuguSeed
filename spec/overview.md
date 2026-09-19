@@ -17,9 +17,9 @@ vocabulary, and the accepted limits of the project.
 - **OVW-PURPOSE-3** — `fuguseed-qr` reads 12 seed words and prints a Standard
   SeedQR as text, zone by zone, so a person can draw it on paper. It sees the
   words, so it runs on an air-gapped computer only.
-- **OVW-PURPOSE-4** — No program generates a seed word (D-02). The dice give the
-  entropy, the paper holds the words, and a device that accepts BIP39 words
-  finds the check word.
+- **OVW-PURPOSE-4** — No program contributes entropy to a seed word (D-02). The
+  dice give the entropy, the paper holds the words, and `fuguseed-qr` finds the
+  check word.
 
 <a id="ovw-scope"></a>
 
@@ -37,16 +37,16 @@ The scope of FuguSeed is:
 - The packed single file `fuguseed-qr` for the air-gapped computer
   ([QR-PACK](qr.md#qr-pack)).
 
-| Non-goal                    | Statement                                                                          |
-| --------------------------- | ---------------------------------------------------------------------------------- |
-| 24 words                    | No program accepts 24 words (D-04).                                                |
-| A Compact SeedQR            | No program emits a Compact SeedQR (D-04).                                          |
-| Seed generation by software | No program generates a seed word (D-02).                                           |
-| A random source             | No program holds a random source, so no audit of one exists.                       |
-| A consumer function         | No function of a consumer, such as a vault or a signer, exists in FuguSeed (D-15). |
-| Another word list           | The English list is the one word list (D-10).                                      |
-| A BIP39 passphrase          | No program takes a passphrase, and the procedure holds the rule against one.       |
-| A printed SeedQR template   | The repository ships no template. The manual names an external one (QR-MANUAL-4).  |
+| Non-goal                  | Statement                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------------- |
+| 24 words                  | No program accepts 24 words (D-04).                                                |
+| A Compact SeedQR          | No program emits a Compact SeedQR (D-04).                                          |
+| Entropy from software     | No program contributes entropy to a seed word (D-02).                              |
+| A random source           | No program holds a random source, so no audit of one exists.                       |
+| A consumer function       | No function of a consumer, such as a vault or a signer, exists in FuguSeed (D-15). |
+| Another word list         | The English list is the one word list (D-10).                                      |
+| A BIP39 passphrase        | No program takes a passphrase, and the procedure holds the rule against one.       |
+| A printed SeedQR template | The repository ships no template. The manual names an external one (QR-MANUAL-4).  |
 
 <a id="ovw-vocabulary"></a>
 
@@ -80,9 +80,9 @@ one use (D-03).
 - **OVW-RISKS-1** — A hand-drawn code can misdecode. The scan on the device and
   the scan in the consumer are the proof of the drawing, and no other proof
   exists.
-- **OVW-RISKS-2** — The trial of the check word on the device consumes the
-  checksum, so the checksum detects no error in words 1 to 11. The person
-  compares the device with the paper before any use (WORDS-MANUAL-4).
+- **OVW-RISKS-2** — The search of the check word consumes the checksum, so the
+  checksum detects no error in words 1 to 11. The person compares the device
+  with the paper before any use (WORDS-MANUAL-4).
 - **OVW-RISKS-3** — A biased die lowers the entropy a little. The dice are the
   one source of entropy, and no program measures them or corrects them.
 - **OVW-RISKS-4** — `fuguseed-qr` trusts the computer that it runs on. The air

@@ -24,7 +24,8 @@ specifies the release of the packed file (D-07).
 - **SEC-CHANNELS-1** — The 12 words enter `fuguseed-qr` on standard input only
   (D-11). No argument, no file name, and no environment variable carries a word.
 - **SEC-CHANNELS-2** — A failure line of `fuguseed-qr` names the word position
-  that failed, never a word. Standard error carries no word.
+  that failed, never a word. Standard error carries no word. The check word
+  leaves on standard output only (QR-MNEMONIC-4).
 
 <a id="sec-release"></a>
 

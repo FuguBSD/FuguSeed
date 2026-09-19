@@ -19,8 +19,9 @@ and the manual.
 - **QR-PROGRAM-3** — The program reads the 12 words from the first line of
   standard input, separated by spaces
   ([SEC-CHANNELS](security.md#sec-channels)).
-- **QR-PROGRAM-4** — The program writes the result to standard output. A failure
-  prints one exact line to standard error and exits 1
+- **QR-PROGRAM-4** — The program writes the result to standard output: the
+  SeedQR text, or the check word when the checksum fails (QR-MNEMONIC-4). A
+  failure prints one exact line to standard error and exits 1
   ([SEC-CHANNELS](security.md#sec-channels)).
 - **QR-PROGRAM-5** — The program and every module that it loads run on core Perl
   v5.34 (D-07). They load `Digest::SHA` and no other module outside this
@@ -42,9 +43,15 @@ and the manual.
   the list of LIST-MODULE-1. Another count or an unknown word is a failure.
 - **QR-MNEMONIC-2** — The 12 indexes give 132 bits: 128 bits of entropy and 4
   bits of checksum. The checksum must equal the first 4 bits of the SHA-256 of
-  the 16 entropy bytes, as BIP39 states. A wrong checksum is a failure.
+  the 16 entropy bytes, as BIP39 states. A wrong checksum is not a failure: the
+  program finds the check word (QR-MNEMONIC-4).
 - **QR-MNEMONIC-3** — The digit string is the 12 indexes, 0-based, each as 4
   decimal digits with leading zeros, in word order: 48 digits.
+- **QR-MNEMONIC-4** — When the checksum fails, the program must find the check
+  word (D-02). The YELLOW block and the BLUE row of the typed word 12 give 7
+  bits of entropy. The RED column gives the 4 checksum bits, so exactly one word
+  of that row is valid. The program must print that word on standard output and
+  exit 0. It prints no SeedQR in that run.
 
 The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
@@ -132,7 +139,8 @@ tests in [TEST-PACK](testing.md#test-pack).
 ## The manual
 
 - **QR-MANUAL-1** — `man/fuguseed-qr/fuguseed-qr.1` documents the program, the
-  input, the output, the exit codes, and the digest check of SEC-RELEASE-2.
+  input, the exit codes, and the digest check of SEC-RELEASE-2. It documents the
+  two results: the SeedQR and the check word.
 - **QR-MANUAL-2** — The manual holds the drawing procedure in ASD-STE100 (D-13).
   The procedure names the air-gapped computer, the printed 25 x 25 template, and
   the marker. It draws one zone at a time and counts the dark modules of each

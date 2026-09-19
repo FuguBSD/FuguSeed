@@ -90,13 +90,15 @@ The tests of the check live in [TEST-SHEET](testing.md#test-sheet).
   ASD-STE100 (D-13). Its sections follow the procedure: the equipment and the
   names, the steps before the start, and how to find one word. Then words 1 to
   11, word 12, and the steps after the procedure.
-- **WORDS-MANUAL-3** — The procedure states that the dice give words 1 to 11,
-  and that word 12 is the check word. The device finds word 12 among the 16
-  words of the BLUE row that YELLOW and BLUE select (D-02).
+- **WORDS-MANUAL-3** — The procedure states that the dice give words 1 to 12,
+  and that word 12 is the check word. The person rolls the three dice for word
+  12 like every other word. `fuguseed-qr` finds the check word in the BLUE row
+  of that roll (D-02). The person writes the check word in place of word 12 and
+  runs the program again.
 - **WORDS-MANUAL-4** — The procedure holds the WARNING of D-14 and the note on
-  the faces 6 and 9. It holds the rule against a BIP39 passphrase, and the rule
-  to select the complete word on the device. It requires the comparison of the
-  device with the paper before any use, and a second copy.
+  the faces 6 and 9. It holds the rule against a BIP39 passphrase. It requires
+  the comparison of the device with the paper after the scan of the SeedQR and
+  before any use, and a second copy.
 - **WORDS-MANUAL-5** — The procedure ends with a pointer to `fuguseed-qr(1)` for
   the SeedQR, the form of the words that a consumer such as FuguPass reads. It
   names no software for the roll of the dice.

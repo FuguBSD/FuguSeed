@@ -21,9 +21,10 @@ WORDS-MANUAL-5 bind the manuals of `fuguseed-words`, so plan 004 lands them.
 
 `fuguseed-qr` reads 12 seed words on standard input and prints a Standard SeedQR
 as text, zone by zone. A person draws it on paper. It is the one program of
-FuguSeed that sees the words. This plan lands the program, its five modules, its
-tests, and its manual. FuguPass reads the SeedQR that this program prints, and
-it reads no typed word, so this program is the handoff between the two projects.
+FuguSeed that sees the words. This plan lands the program, its five modules, the
+search of the check word (QR-MNEMONIC-4), its tests, and its manual. FuguPass
+reads the SeedQR that this program prints, and it reads no typed word, so this
+program is the handoff between the two projects.
 
 ## Constraints that shape the design
 
@@ -44,8 +45,16 @@ reference image of test vector 4 of the SeedQR specification is mask 0, so one
 picture proves the whole pipeline.
 
 **A failure names a position, never a word.** The one failure line on standard
-error names the word position, the count, or the checksum (SEC-CHANNELS-2). An
-argument is a usage error with exit 2 (QR-PROGRAM-2).
+error names the word position or the count (SEC-CHANNELS-2). A wrong checksum is
+a result, not a failure: the program prints the check word on standard output
+and exits 0 (QR-MNEMONIC-4). An argument is a usage error with exit 2
+(QR-PROGRAM-2).
+
+**The check word is one column of one row.** The typed word 12 gives 7 entropy
+bits through its YELLOW block and BLUE row, and the RED column gives the 4
+checksum bits. The program computes the checksum bits from the 128 entropy bits,
+and the word at that column of the row is the check word. The search is a
+computation, and no trial loop exists (QR-MNEMONIC-4).
 
 **The pause reads one line per zone.** After each zone view, the program reads
 one line from standard input before the next zone. At the end of the input, the
@@ -64,14 +73,16 @@ The program takes no option and no argument. The first line of standard input
 holds the 12 words, separated by spaces. Standard output holds the digit string
 of QR-MNEMONIC-3 on one line, then the grid view. The 25 zone views follow, in
 the order `A-1` to `E-5`. A dark module prints as `#`, and a light module prints
-as `.`. Exit 0 on success, 1 on a failure, and 2 on a usage error.
+as `.`. When the checksum fails, standard output holds the check word on one
+line and nothing else (QR-MNEMONIC-4). Exit 0 on success, 1 on a failure, and 2
+on a usage error.
 
 ## Files
 
 | File                            | Change                                                          |
 | ------------------------------- | --------------------------------------------------------------- |
 | `bin/fuguseed-qr`               | The program: it calls `App::FuguSeed::QR->run` only             |
-| `lib/App/FuguSeed/Mnemonic.pm`  | The words: count, list membership, checksum, digits             |
+| `lib/App/FuguSeed/Mnemonic.pm`  | The words: count, list membership, checksum, check word, digits |
 | `lib/App/FuguSeed/Codewords.pm` | The bit stream, the pad bytes, the Reed-Solomon remainder       |
 | `lib/App/FuguSeed/Matrix.pm`    | The function patterns, the placement, the mask, the format bits |
 | `lib/App/FuguSeed/Text.pm`      | The grid view and the zone views                                |
@@ -95,8 +106,10 @@ comment names the table of the standard (QR-PROGRAM-7).
 `t/fuguseed/qr.t` holds:
 
 - The two 12-word test vectors of the SeedQR specification give their digit
-  strings. A wrong count, an unknown word, and a wrong checksum fail, and each
-  failure names the position (TEST-QR-1).
+  strings. A wrong count and an unknown word fail, and each failure names the
+  position. For each vector, the test replaces word 12 with each other word of
+  its row. The program names word 12 of the vector as the check word
+  (TEST-QR-1).
 - The 44 codewords of test vector 4 equal the values that its reference image
   implies (TEST-QR-2).
 - The matrix of test vector 4 equals the picture of its reference image, module
@@ -113,6 +126,8 @@ comment names the table of the standard (QR-PROGRAM-7).
 - An argument gives one usage line on standard error and exit 2.
 - A wrong word gives one line on standard error that names the position and
   holds no word of the input, and exit 1.
+- A wrong checksum gives the check word alone on standard output, nothing on
+  standard error, and exit 0 (QR-PROGRAM-4, QR-MNEMONIC-4, SEC-CHANNELS-2).
 - The scan covers the six files of this plan and `lib/App/FuguSeed/List.pm`. It
   takes the module list of the program, so a later module joins it. Each source
   loads `Digest::SHA` and modules of this repository only. Each source holds no
