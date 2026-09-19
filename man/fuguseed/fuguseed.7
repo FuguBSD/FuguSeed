@@ -117,6 +117,7 @@ The dice give word 12 like every other word: throw the three dice, and
 write the word of the cell.
 The checksum of the 12 words is correct for one word of the BLUE row
 of that throw only.
+One throw in 16 gives that word.
 .Pp
 Do these steps:
 .Bl -enum
@@ -126,15 +127,19 @@ Find word 12 with the steps of "How to find one word".
 Start
 .Xr fuguseed-qr 1
 on an air-gapped computer, and type the 12 words.
-.It
-The program prints one word: the check word of the BLUE row of your
+.El
+.Pp
+The program prints one word, or it prints the SeedQR.
+Both results are correct.
+.Pp
+With one word, that word is the check word of the BLUE row of your
 throw.
-.It
 Write the check word in place of word 12 on the paper.
-.It
 Start the program again, and type the 12 words again.
 The program prints the SeedQR.
-.El
+.Pp
+With the SeedQR, your throw gave the check word.
+Keep word 12 on the paper, and write no new word.
 .Pp
 The check word carries no entropy: it is a function of the other
 bits.

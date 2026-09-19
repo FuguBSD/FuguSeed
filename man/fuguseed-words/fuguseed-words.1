@@ -125,6 +125,8 @@ $ fuguseed-words build english.txt > sheet.html
 Build the sheet of one date, twice, and compare the two files:
 .Bd -literal -offset indent
 $ fuguseed-words build --date 2026-01-01 english.txt > a.html
+$ fuguseed-words build --date 2026-01-01 english.txt > b.html
+$ cmp a.html b.html
 .Ed
 .Pp
 Check a sheet before you print it:
