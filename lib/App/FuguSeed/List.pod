@@ -57,7 +57,9 @@ unknown word. C<words()> returns 2048 strings.
 
 =head1 ERRORS
 
-No method dies. An unknown word and an index outside the list are
+C<word()> and C<index()> die when the caller gives no argument. The
+signature of each method requires one, and Perl reports C<Too few
+arguments>. An unknown word and an index outside the list are
 recoverable errors, and the caller sees C<undef>.
 
 =head1 SEE ALSO

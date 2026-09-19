@@ -15,8 +15,10 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# A script copied the word block from share/fuguseed/english.txt. Do
-# not edit the block by hand: copy the share file again.
+# The word block below is a copy of share/fuguseed/english.txt, byte
+# for byte. It must stay equal to that file. Do not edit the block by
+# hand: copy the share file again. t/fuguseed/list.t holds both copies
+# to one digest.
 
 package App::FuguSeed::List;
 

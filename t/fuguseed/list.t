@@ -34,7 +34,7 @@ is( $embedded, $digest, 'the embedded words give the pinned digest' );
 open my $fh, '<', $share or BAIL_OUT("$share: $!");
 binmode $fh;
 my $file = Digest::SHA->new(256)->addfile($fh)->hexdigest;
-close $fh;
+close $fh or BAIL_OUT("close $share: $!");
 is( $file, $digest, "$share gives the pinned digest" );
 
 # TEST-LIST-2: LIST-SOURCE-2 and LIST-SOURCE-3 on the embedded words.
@@ -80,12 +80,15 @@ is( $none, undef, 'an absent word gives undef' );
 # LIST-MODULE-2: scripts/pack embeds the module in fuguseed-qr, so
 # the module loads no module from outside this repository but the
 # core of perl 5.34. Digest::SHA, the one module that this test adds,
-# is core as well.
+# is core as well. The child gets no PERL5LIB and no PERL5OPT of this
+# environment, because either one writes a false %INC entry.
+delete local @ENV{qw(PERL5LIB PERL5OPT)};
+
 open my $ph, '-|', $^X, '-Ilib', "-M$class", '-e',
     'print "$_\n" for sort keys %INC'
     or BAIL_OUT("$^X: $!");
 my @loaded = <$ph>;
-close $ph;
+close $ph or BAIL_OUT("close $^X: status $?");
 chomp @loaded;
 ok( scalar @loaded, 'the module loads in a perl of its own' );
 
