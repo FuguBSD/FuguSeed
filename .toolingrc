@@ -7,9 +7,12 @@ dist.module   App::FuguSeed
 dist.abstract make BIP39 seed words with dice, and turn them into a SeedQR
 dist.author   Dick Olsson <hi@senzilla.io>
 dist.perl     5.034
+dist.exe      bin/fuguseed-words
 dist.exe      bin/fuguseed-qr
 dist.testdir  t/fuguseed
 # scripts/dist copies a test by its .t name, so each fixture of a
 # shipped test needs one line here. The key names one file.
 dist.share-extra t/fuguseed/fixtures/qr/vector4.picture
 dist.share-extra t/fuguseed/fixtures/qr/vector4.output
+dist.share-extra t/fuguseed/fixtures/sheet.html
+dist.prereq   Fugu

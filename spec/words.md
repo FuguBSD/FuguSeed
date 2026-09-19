@@ -93,12 +93,16 @@ The tests of the check live in [TEST-SHEET](testing.md#test-sheet).
 - **WORDS-MANUAL-3** — The procedure states that the dice give words 1 to 12,
   and that word 12 is the check word. The person rolls the three dice for word
   12 like every other word. `fuguseed-qr` finds the check word in the BLUE row
-  of that roll (D-02). The person writes the check word in place of word 12 and
-  runs the program again.
+  of that roll (D-02). One roll in 16 gives the check word, and the procedure
+  states that number. The procedure branches on the two results of QR-PROGRAM-4,
+  and it states that both results are correct. With the check word, the person
+  writes it in place of word 12 and runs the program again. With the SeedQR, the
+  roll gave the check word, and the person writes no new word.
 - **WORDS-MANUAL-4** — The procedure holds the WARNING of D-14 and the note on
   the faces 6 and 9. It holds the rule against a BIP39 passphrase. It requires
   the comparison of the device with the paper after the scan of the SeedQR and
-  before any use, and a second copy.
+  before any use, and a second copy. The end of the procedure keeps the SeedQR
+  drawing and the two copies of the words. It burns or shreds every other paper.
 - **WORDS-MANUAL-5** — The procedure ends with a pointer to `fuguseed-qr(1)` for
   the SeedQR, the form of the words that a consumer such as FuguPass reads. It
   names no software for the roll of the dice.
