@@ -64,7 +64,8 @@ manuals. Each unit that a test proves points here.
   `fuguseed-qr` loads.
 - **TEST-PACK-5** — One test must load `App::FuguSeed` and prove QR-PACK-4 on
   its source. The source must hold the package name that PAUSE indexes, and no
-  code.
+  code. The test ships in the tarball, so it must accept the one `our $VERSION`
+  line that `scripts/dist` writes below each package statement.
 - **TEST-PACK-6** — The tests must count the lines of the packed file outside
   the word list block of LIST-MODULE-1. That count must stay below the bound
   that SEC-RELEASE-3 gives.

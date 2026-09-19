@@ -45,10 +45,19 @@ like( $source, qr/^package[ \t]+\Q$module\E[ \t]*;$/m,
 # comments is the package statement, a pragma line, or the true value
 # at the end. A subroutine, a top-level statement, and a BEGIN block
 # each fail this check.
+#
+# This test ships in the tarball, and scripts/dist stamps one line
+# below each package statement of a staged module:
+#
+#	our $VERSION = '<dotted-decimal>';
+#
+# The filter accepts that line in its exact form, so the staged test
+# passes. It accepts no other our statement, and no other value.
 my @statement = grep { !m{\A\s*(?:\#|\z)} } split /\n/, $source;
 my @code      = grep {
 	     !/\Apackage[ ]\Q$module\E;\z/
 	  && !/\A(?:use|no)[ ][a-z][^;]*;\z/
+	  && !/\Aour[ ]\$VERSION[ ]=[ ]'[0-9]+(?:\.[0-9]+)+';\z/
 	  && !/\A1;\z/
 } @statement;
 is( "@code", q{}, 'the lead module holds no code' );
