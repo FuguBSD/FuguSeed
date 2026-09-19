@@ -9,8 +9,10 @@ PERL_SRC_DIRS	= lib scripts
 # values, and it packs the tarball that the build writes.
 DIST		= scripts/pack
 
-# The full test tier set of make test
-TEST_GLOBS	= t/fuguseed/*.t t/scripts/*.t t/ci/*.t
+# The full test tier set of make test. A repository gate reads the
+# checkout, so it sits outside t/fuguseed/, the one directory of
+# dist.testdir in .toolingrc, and it ships in no tarball (TEST-REPO-1).
+TEST_GLOBS	= t/fuguseed/*.t t/repo/*.t t/scripts/*.t t/ci/*.t
 
 # make man renders each manual page with mandoc (WORDS-MANUAL-6).
 # t/fuguseed/man.t lints the same pages on each test run.

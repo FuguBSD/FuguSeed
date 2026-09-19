@@ -76,3 +76,13 @@ manuals. Each unit that a test proves points here.
 
 - **TEST-MANUAL-1** — A test must prove that `mandoc -Tlint` reports no error on
   any page under `man`.
+
+<a id="test-repo"></a>
+
+## The repository gates
+
+- **TEST-REPO-1** — A test that reads the checkout, such as the vocabulary gate,
+  proves this repository, not the installed distribution. It must sit outside
+  the test directory that `dist.testdir` of `.toolingrc` names. The tarball
+  ships that directory, and the machine that installs the tarball holds no
+  checkout.
