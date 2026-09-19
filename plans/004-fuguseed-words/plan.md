@@ -2,20 +2,29 @@
 
 ## Status
 
-Proposed. No part lands now. It waits on plan 003 for the `t/scripts/*.t` glob
-of `TEST_GLOBS`. The new test `t/scripts/install.t` runs through that glob. The
-`man` target and the mandoc test exist already.
+Proposed. Every part can land now. `mk/local.mk` holds the `t/scripts/*.t` glob
+of `TEST_GLOBS`, and the new test `t/scripts/install.t` runs through that glob.
+The `man` target and the mandoc test exist already.
+
+`.toolingrc` needs two lines again: the `dist.exe` line of `bin/fuguseed-words`,
+and the `dist.prereq` line of `Fugu`. Each `deps/*.txt` file needs the Fugu
+entry of the runtime environment again. `Darwin.txt` and `Linux.txt` need the
+signify package that checks the signature of that entry. No module of the
+repository loads Fugu today, and `fuguseed-words` is the first one (D-06).
+Without the `dist.exe` line, the tarball installs no `fuguseed-words`. Without
+the Fugu lines, the install misses the Fugu library.
 
 Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
 WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE without
 LIST-SHARE-1. Implements: SEC-TRUST without SEC-TRUST-2 and SEC-TRUST-3.
-Implements: TEST-PACK without TEST-PACK-1 and TEST-PACK-2.
+Implements: TEST-PACK without TEST-PACK-1, TEST-PACK-2, TEST-PACK-4,
+TEST-PACK-5, and TEST-PACK-6.
 
 Of LIST-SHARE, SEC-TRUST, and TEST-PACK, this plan lands LIST-SHARE-2 and
 LIST-SHARE-3, SEC-TRUST-1, and TEST-PACK-3. The share file holds LIST-SHARE-1
-already. SEC-TRUST-2 and SEC-TRUST-3 are done, and plan 003 lands TEST-PACK-1
-and TEST-PACK-2. WORDS-MANUAL-6, the `man` target, is done, so this plan lands
-the other five rules of that unit.
+already. SEC-TRUST-2, SEC-TRUST-3, TEST-PACK-1, TEST-PACK-2, TEST-PACK-4,
+TEST-PACK-5, and TEST-PACK-6 are done. WORDS-MANUAL-6, the `man` target, is
+done, so this plan lands the other five rules of that unit.
 
 ## Purpose
 
@@ -83,7 +92,8 @@ resolve through `Fugu::File->share_path`, in a checkout and after an install
 | `t/fuguseed/words-program.t`          | The program tests below                                                   |
 | `t/fuguseed/fixtures/sheet.html`      | The sheet of the shipped list on the fixed date                           |
 | `t/scripts/install.t`                 | The install test below                                                    |
-| `.toolingrc`                          | One `dist.share-extra` line for the sheet fixture                         |
+| `.toolingrc`                          | `dist.exe bin/fuguseed-words`, `dist.prereq Fugu`, and the sheet fixture  |
+| `deps/*.txt`                          | The Fugu entry of the runtime environment, and signify on two platforms   |
 | `spec/STATUS.md`                      | The cited units, and `t/scripts/install.t` in the Code roots of `list.md` |
 
 `.toolingrc` names the sheet fixture in `dist.share-extra`, because
@@ -112,9 +122,11 @@ the rule against a BIP39 passphrase. It ends with the pointer to
 
 `t/scripts/install.t` builds the distribution with
 `scripts/dist --out <temporary directory>`, installs it into a temporary prefix,
-and resolves the share path there (LIST-SHARE-2). It sits outside `t/fuguseed/`,
-because `.toolingrc` names `t/fuguseed` alone in `dist.testdir`, and
-`mk/local.mk` names `t/scripts/*.t` in `TEST_GLOBS`.
+and resolves the share path there (LIST-SHARE-2). It proves that the install
+writes `fuguseed-words` into the prefix, so a missing `dist.exe` line of
+`.toolingrc` fails the test. It sits outside `t/fuguseed/`, because `.toolingrc`
+names `t/fuguseed` alone in `dist.testdir`, and `mk/local.mk` names
+`t/scripts/*.t` in `TEST_GLOBS`.
 
 `t/fuguseed/words-program.t` runs the program as a child and holds:
 

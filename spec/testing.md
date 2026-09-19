@@ -57,6 +57,18 @@ manuals. Each unit that a test proves points here.
   outside the core of perl 5.34 and no `Fugu::` module.
 - **TEST-PACK-3** — The tests must prove that no module of `fuguseed-words`
   loads `App::FuguSeed::Mnemonic` (SEC-TRUST-1).
+- **TEST-PACK-4** — The tests must hold the text of the packed file to its
+  parts. The parts are the header of `scripts/pack`, one frame for each module,
+  and the program body. They must hold the first line of the file to the literal
+  `#!/usr/bin/perl`. They must hold the packed set to the modules that
+  `fuguseed-qr` loads.
+- **TEST-PACK-5** — One test must load `App::FuguSeed` and prove QR-PACK-4 on
+  its source. The source must hold the package name that PAUSE indexes, and no
+  code. The test ships in the tarball, so it must accept the one `our $VERSION`
+  line that `scripts/dist` writes below each package statement.
+- **TEST-PACK-6** — The tests must count the lines of the packed file outside
+  the word list block of LIST-MODULE-1. That count must stay below the bound
+  that SEC-RELEASE-3 gives.
 
 <a id="test-manual"></a>
 
@@ -64,3 +76,13 @@ manuals. Each unit that a test proves points here.
 
 - **TEST-MANUAL-1** — A test must prove that `mandoc -Tlint` reports no error on
   any page under `man`.
+
+<a id="test-repo"></a>
+
+## The repository gates
+
+- **TEST-REPO-1** — A test that reads the checkout, such as the vocabulary gate,
+  proves this repository, not the installed distribution. It must sit outside
+  the test directory that `dist.testdir` of `.toolingrc` names. The tarball
+  ships that directory, and the machine that installs the tarball holds no
+  checkout.

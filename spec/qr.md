@@ -124,12 +124,17 @@ The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
 - **QR-PACK-1** — `scripts/pack` writes `build/fuguseed-qr`: one executable file
   with the program of QR-PROGRAM-1 and the modules of QR-PROGRAM-6 and
-  LIST-MODULE-1. `make dist` runs it after `scripts/dist`.
+  LIST-MODULE-1. `make dist` runs it after `scripts/dist`. The first line of the
+  file is `#!/usr/bin/perl`. The air-gapped computer runs the perl of its base
+  system, and it installs nothing (D-07).
 - **QR-PACK-2** — The packer is a core-only Perl script of this repository. It
   packs the listed modules only: no Fugu module, no core module, and no module
   of `fuguseed-words`.
 - **QR-PACK-3** — Two packs of one tree are byte-equal. The file holds no
   timestamp and no build path.
+- **QR-PACK-4** — `App::FuguSeed` is the lead module of the distribution. PAUSE
+  indexes the distribution through its package. The module holds no code, and
+  the packed file holds no part of it.
 
 The release of the file lives in [SEC-RELEASE](security.md#sec-release), and its
 tests in [TEST-PACK](testing.md#test-pack).
