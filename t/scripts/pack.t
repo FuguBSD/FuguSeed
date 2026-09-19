@@ -1,13 +1,15 @@
 #!/usr/bin/env perl
 # ex:ts=8 sw=4:
 # The packer and the packed file (QR-PACK, TEST-PACK-1, TEST-PACK-2,
-# SEC-RELEASE-3, SEC-TRUST-3).
+# TEST-PACK-4, TEST-PACK-6, SEC-RELEASE-3, SEC-TRUST-3).
 #
 # The test packs the tree into a temporary directory. It runs the
 # packed file with the core library of one perl alone: with the perl
 # of the test, and with /usr/bin/perl, the perl of the shebang. Then
 # it holds the text of the packed file to the header of the packer
-# and to the sources of the checkout, line for line.
+# and to the sources of the checkout, line for line. The comparison
+# of the header reads its text out of the packer, so the test pins
+# the shebang to a literal name.
 #
 # The test sits outside t/fuguseed/, because .toolingrc names
 # t/fuguseed alone in dist.testdir: a test of a script of this
@@ -38,6 +40,19 @@ use constant PACKED  => 'fuguseed-qr';
 use constant OUTPUT  => 't/fuguseed/fixtures/qr/vector4.output';
 use constant VERSION => '0.0.0';
 use constant BASE    => '/usr/bin/perl';
+
+# SHEBANG:
+#	Line 1 of the packed file. The kernel runs this interpreter on
+#	the air-gapped computer, so this test holds the line to the
+#	literal name of the base perl (QR-PACK-1, D-07). The value
+#	comes from this test, never from scripts/pack.
+use constant SHEBANG => '#!' . BASE;
+
+# BOUND:
+#	The bound on the lines of the packed file outside the word
+#	list block. One person reads those lines in full
+#	(SEC-RELEASE-3).
+use constant BOUND => 1200;
 
 # Test vector 4 of the SeedQR specification.
 use constant VECTOR =>
@@ -202,7 +217,8 @@ sub _module ($package)
 # _header():
 #	The HEADER constant of the packer, as the packer writes it
 #	into the packed file. scripts/pack holds the one copy of that
-#	text.
+#	text, so a comparison with it catches no change of the
+#	constant. The shebang assertion below reads the packed file.
 sub _header ()
 {
 	my ($header) = _slurp(PACKER) =~ m{
@@ -226,16 +242,80 @@ sub _frame ($module)
 	    . _slurp("lib/$module") . "}\n\n";
 }
 
+# _loaded():
+#	The path under lib of each module of this repository that the
+#	program loads, from the %INC of a child (QR-PROGRAM-6).
+sub _loaded ()
+{
+	open my $ph, '-|', $^X, '-Ilib', '-MApp::FuguSeed::QR', '-e',
+	    'print "$_\n" for sort keys %INC'
+	    or BAIL_OUT("$^X: $!");
+	my @path = <$ph>;
+	close $ph or BAIL_OUT("close $^X: status $?");
+	chomp @path;
+
+	return grep { m{\AApp/FuguSeed/} } @path;
+}
+
+# _loads($text):
+#	Each module name that $text loads. A version is no module:
+#	"use v5.34" gives the token "v5". The word list of
+#	App::FuguSeed::List holds the words "use" and "require", each
+#	one alone on its line, so the pattern takes a space or a tab
+#	after the verb.
+sub _loads ($text)
+{
+	return $text =~ /^[ \t]*(?:use|require)[ \t]+([\w:]+)/mg;
+}
+
+# _foreign($packed, @loads):
+#	Each name of @loads that the hash $packed does not hold, that
+#	is no version, and that is no module of the core library of
+#	perl 5.034 (TEST-PACK-2).
+sub _foreign ( $packed, @loads )
+{
+	return grep {
+		     !$packed->{$_}
+		  && !/\Av?[0-9]/
+		  && !Module::CoreList::is_core( $_, undef, 5.034 )
+	} @loads;
+}
+
 my @module = map { _module($_) } grep { $_ ne 'main' } split q{ }, PACKAGES;
 my $text   = _slurp($packed);
 
+# QR-PACK-2 and SEC-TRUST-3: the packed set is the set that the
+# program loads. t/fuguseed/qr-program.t scans the modules of that
+# set, so a module outside it rides in the packed file with no scan.
+my @loaded = _loaded();
+is( join( q{ }, sort @module ),
+	join( q{ }, sort @loaded ),
+	'the packed set is the set that the program loads' );
+
+# QR-PACK-1 and D-07: the kernel runs line 1 of the packed file, and
+# the air-gapped computer runs the perl of its base system. This test
+# holds that line to the literal name of that perl, because the
+# comparison below reads the header out of the packer.
+my ($shebang) = $text =~ /\A([^\n]*)\n/;
+is( $shebang, SHEBANG, 'the packed file runs the base perl' );
+
 # scripts/dist writes one "our $VERSION" line under each package of
-# the tarball, so the packed file names the version of its release.
-# The comparison below reads the text without those lines.
+# the tarball, so the packed file names the version of its release. A
+# count over the whole text is position-blind, so each frame proves
+# its own stamp first. The comparison below reads the text without
+# those lines.
 my $release = VERSION;
 my $stamp   = qr/^our[ ]\$VERSION[ ]=[ ]'\Q$release\E';\n/m;
-my $count   = () = $text =~ /$stamp/g;
-is( $count, scalar @module, 'each module of the packed file names the version' );
+my @part    = split /^(?=BEGIN[ ][{][ ]\$INC[{])/m, $text;
+
+is( scalar @part, @module + 1,
+	'the packed file holds one frame for each module' );
+is( scalar( () = ( $part[0] // q{} ) =~ /$stamp/g ),
+	0, 'the header of the packed file names no version' );
+for my $i ( 0 .. $#module ) {
+	my $count = () = ( $part[ $i + 1 ] // q{} ) =~ /$stamp/g;
+	is( $count, 1, "the frame of $module[$i] names the version once" );
+}
 
 ( my $bare = $text ) =~ s/$stamp//g;
 my $body = _slurp(PROGRAM);
@@ -250,8 +330,10 @@ is(
 	'the packed file is the header, the six module frames, and the body'
 );
 
-# SEC-TRUST-3: the header is the one part of the packed file that no
-# scan of a source covers, and it holds comment lines alone.
+# SEC-TRUST-3: the packer writes the header, the BEGIN line and the
+# two braces of each frame, and the "package main;" line. No scan of
+# a source covers those lines. The comparison above holds each one to
+# its expected text, and the header must hold comment lines alone.
 my @line = grep { !m{\A(?:\#|\z)} } split /\n/, _header();
 is( "@line", q{}, 'the header of the packed file holds no code' );
 
@@ -261,21 +343,45 @@ is( "@line", q{}, 'the header of the packed file holds no code' );
 my @package = $text =~ /^package[ \t]+([\w:]+)[ \t]*;/mg;
 is( "@package", PACKAGES, 'the packed file holds the six modules and the body' );
 
-# TEST-PACK-2 and SEC-RELEASE-3: each load names a module of the
-# packed set, or a module of the core library of perl 5.034. A
-# version is no module: "use v5.34" gives the token "v5". The word
-# list of App::FuguSeed::List holds the words "use" and "require",
-# each one alone on its line, so the pattern takes a space or a tab
-# after the verb.
+# The guard of _loads and _foreign (TEST-PACK-2). A pattern that
+# matches nothing gives an empty list and a green test, so the sample
+# below proves that the pattern reads each verb, and that the filter
+# keeps a name from outside the core.
+my $sample = "use Digest::SHA;\n\trequire Fugu::File;\n"
+    . "use v5.34;\nuse App::FuguSeed::List;\n";
+is( join( q{ }, _loads($sample) ),
+	'Digest::SHA Fugu::File v5 App::FuguSeed::List',
+	'the load pattern reads each use line and each require line' );
+is(
+	join( q{ }, _foreign( { 'App::FuguSeed::List' => 1 }, _loads($sample) ) ),
+	'Fugu::File',
+	'the filter keeps a load outside the packed set and the core'
+);
+
+# TEST-PACK-2 and SEC-RELEASE-3: each load of the packed file names a
+# module of the packed set, or a module of the core library of perl
+# 5.034. The file loads Digest::SHA, so the pattern fires on it.
 my %packed = map { $_ => 1 } @package;
-my @loads  = $text =~ /^[ \t]*(?:use|require)[ \t]+([\w:]+)/mg;
-my @foreign = grep {
-	     !$packed{$_}
-	  && !/\Av?[0-9]/
-	  && !Module::CoreList::is_core( $_, undef, 5.034 )
-} @loads;
-is( "@foreign", q{}, 'the packed file names no module outside the packed set' );
+my @loads  = _loads($text);
+my %load   = map { $_ => 1 } @loads;
+ok( $load{'Digest::SHA'}, 'the load pattern fires on the packed file' );
+is( join( q{ }, _foreign( \%packed, @loads ) ),
+	q{},
+	'the packed file names no module outside the packed set and the core' );
 unlike( $text, qr/(?<![\w:])Fugu::/,
 	'the packed file names no Fugu:: module' );
+
+# SEC-RELEASE-3: one person reads the packed file in full. The word
+# list of LIST-MODULE-1 is one heredoc block of the file, and the
+# DIGEST constant beside it pins that block, so the person reads the
+# lines outside the block. The bound holds that count.
+my ( $marker, $block ) = $text =~ m{<<'(\w+)';\n(.*?)^\1$}ms;
+defined $block or BAIL_OUT('the packed file holds no heredoc block');
+my $whole = () = $text =~ /\n/g;
+my $words = () = $block =~ /\n/g;
+cmp_ok( $whole - $words, '<', BOUND,
+	'a person reads fewer than '
+	    . BOUND
+	    . " lines outside the $marker block" );
 
 done_testing();

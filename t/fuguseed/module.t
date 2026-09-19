@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 # ex:ts=8 sw=4:
-# The lead module App::FuguSeed (QR-PACK-4).
+# The lead module App::FuguSeed (QR-PACK-4, TEST-PACK-5).
 #
 # PAUSE grants the distribution name through the package of this
 # module, and it indexes the distribution through that package.
@@ -35,8 +35,16 @@ like( $source, qr/^package[ \t]+\Q$module\E[ \t]*;$/m,
 
 # QR-PACK-4: the module holds no code, so scripts/pack packs no part
 # of it. t/scripts/pack.t proves that the packed file holds the six
-# modules of the program and no other package.
-unlike( $source, qr/^[ \t]*sub[ \t]/m,
-	'the lead module declares no subroutine' );
+# modules of the program and no other package. Each line outside the
+# comments is the package statement, a pragma, or the true value at
+# the end. A subroutine, a top-level statement, and a BEGIN block
+# each fail this check.
+my @statement = grep { !m{\A\s*(?:\#|\z)} } split /\n/, $source;
+my @code      = grep {
+	     !/\Apackage[ ]\Q$module\E;\z/
+	  && !/\A(?:use|no)[ ][a-z][^;]*;\z/
+	  && !/\A1;\z/
+} @statement;
+is( "@code", q{}, 'the lead module holds no code' );
 
 done_testing();

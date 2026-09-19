@@ -57,6 +57,17 @@ manuals. Each unit that a test proves points here.
   outside the core of perl 5.34 and no `Fugu::` module.
 - **TEST-PACK-3** — The tests must prove that no module of `fuguseed-words`
   loads `App::FuguSeed::Mnemonic` (SEC-TRUST-1).
+- **TEST-PACK-4** — The tests must hold the text of the packed file to its
+  parts. The parts are the header of `scripts/pack`, one frame for each module,
+  and the program body. They must hold the first line of the file to the literal
+  `#!/usr/bin/perl`. They must hold the packed set to the modules that
+  `fuguseed-qr` loads.
+- **TEST-PACK-5** — One test must load `App::FuguSeed` and prove QR-PACK-4 on
+  its source. The source must hold the package name that PAUSE indexes, and no
+  code.
+- **TEST-PACK-6** — The tests must count the lines of the packed file outside
+  the word list of LIST-MODULE-1. That count must stay below a fixed bound
+  (SEC-RELEASE-3).
 
 <a id="test-manual"></a>
 
