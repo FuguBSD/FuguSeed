@@ -2,8 +2,9 @@
 
 ## Status
 
-Proposed. No part lands now. It waits on plan 002 for the `man` target and the
-mandoc test. It also waits on plan 003 for TEST-PACK-1 and TEST-PACK-2.
+Proposed. No part lands now. It waits on plan 003 for the `t/scripts/*.t` glob
+of `TEST_GLOBS`. The new test `t/scripts/install.t` runs through that glob. The
+`man` target and the mandoc test exist already.
 
 Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
 WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE without
@@ -12,8 +13,8 @@ Implements: TEST-PACK without TEST-PACK-1 and TEST-PACK-2.
 
 Of LIST-SHARE, SEC-TRUST, and TEST-PACK, this plan lands LIST-SHARE-2 and
 LIST-SHARE-3, SEC-TRUST-1, and TEST-PACK-3. The share file holds LIST-SHARE-1
-already, and plan 002 and plan 003 land the other rules of SEC-TRUST and
-TEST-PACK. Plan 002 lands WORDS-MANUAL-6, the `man` target, so this plan lands
+already. SEC-TRUST-2 and SEC-TRUST-3 are done, and plan 003 lands TEST-PACK-1
+and TEST-PACK-2. WORDS-MANUAL-6, the `man` target, is done, so this plan lands
 the other five rules of that unit.
 
 ## Purpose
@@ -121,7 +122,7 @@ because `.toolingrc` names `t/fuguseed` alone in `dist.testdir`, and
 - No source file under `lib/App/FuguSeed/` that the program loads names
   `App::FuguSeed::Mnemonic` (TEST-PACK-3).
 
-The mandoc test of plan 002 covers the two new pages.
+The mandoc test `t/fuguseed/man.t` covers the two new pages.
 
 ## Acceptance
 
@@ -131,5 +132,5 @@ The mandoc test of plan 002 covers the two new pages.
 
 ## What this plan does not do
 
-It ships no printed SeedQR template: the manual of plan 002 names the external
-one (QR-MANUAL-4). It rolls no dice and finds no word.
+It ships no printed SeedQR template: the manual `fuguseed-qr(1)` names the
+external one (QR-MANUAL-4). It rolls no dice and finds no word.

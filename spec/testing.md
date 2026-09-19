@@ -36,12 +36,15 @@ manuals. Each unit that a test proves points here.
 - **TEST-QR-2** — The tests must hold the 44 codewords of test vector 4 to the
   values that the reference image of the SeedQR specification implies.
 - **TEST-QR-3** — The tests must hold the matrix of test vector 4 to the
-  reference image of the SeedQR specification, module for module. The picture of
-  that image sits in the test as 25 rows of `#` and `.`.
+  reference image of the SeedQR specification, module for module. The fixture
+  `t/fuguseed/fixtures/qr/vector4.picture` must hold the picture of that image,
+  as 25 rows of `#` and `.`.
 - **TEST-QR-4** — The tests must prove QR-MATRIX-2 on the matrix of both test
   vectors. They must prove that the 15 format bits sit in both positions.
 - **TEST-QR-5** — The tests must hold the grid view and the zone views of test
-  vector 4 to fixtures. They must prove the zone counts against the matrix.
+  vector 4 to fixtures. They must prove the zone counts against the matrix. They
+  must prove that the program reads one line of standard input between two zone
+  views (QR-TEXT-5).
 
 <a id="test-pack"></a>
 
