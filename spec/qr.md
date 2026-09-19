@@ -130,6 +130,9 @@ The tests of this unit live in [TEST-QR](testing.md#test-qr).
   of `fuguseed-words`.
 - **QR-PACK-3** — Two packs of one tree are byte-equal. The file holds no
   timestamp and no build path.
+- **QR-PACK-4** — `App::FuguSeed` is the lead module of the distribution. PAUSE
+  indexes the distribution through its package. The module holds no code, and
+  the packed file holds no part of it.
 
 The release of the file lives in [SEC-RELEASE](security.md#sec-release), and its
 tests in [TEST-PACK](testing.md#test-pack).

@@ -6,7 +6,8 @@
 # The test packs the tree into a temporary directory. It runs the
 # packed file with the core library of one perl alone: with the perl
 # of the test, and with /usr/bin/perl, the perl of the shebang. Then
-# it scans the text of the packed file.
+# it holds the text of the packed file to the header of the packer
+# and to the sources of the checkout, line for line.
 #
 # The test sits outside t/fuguseed/, because .toolingrc names
 # t/fuguseed alone in dist.testdir: a test of a script of this
@@ -18,10 +19,11 @@ use warnings;
 use experimental 'signatures';
 no feature qw(indirect multidimensional bareword_filehandles);
 use Test::More;
-use File::Temp ();
-use FindBin    qw($RealBin);
-use IPC::Open3 qw(open3);
-use Symbol     qw(gensym);
+use File::Temp       ();
+use Module::CoreList ();
+use FindBin          qw($RealBin);
+use IPC::Open3       qw(open3);
+use Symbol           qw(gensym);
 
 # scripts/pack runs scripts/dist with the perl of this test, and that
 # script holds use v5.36.
@@ -31,6 +33,7 @@ my $root = "$RealBin/../..";
 chdir $root or BAIL_OUT("chdir $root: $!");
 
 use constant PACKER  => 'scripts/pack';
+use constant PROGRAM => 'bin/fuguseed-qr';
 use constant PACKED  => 'fuguseed-qr';
 use constant OUTPUT  => 't/fuguseed/fixtures/qr/vector4.output';
 use constant VERSION => '0.0.0';
@@ -179,215 +182,100 @@ is( _slurp($packed), _slurp($again), 'two packs of one tree are byte-equal' );
 unlike( _slurp($packed), qr/\Q$directory\E|\Q$second\E/,
 	'the packed file holds no build path' );
 
-# The scan of the packed file (SEC-TRUST-3). The strip and the
-# patterns below are the copy of t/fuguseed/qr-program.t, which scans
-# the seven sources of the checkout and holds the full table of
-# caught samples and clean samples. The packed file is the file that
-# crosses to the air-gapped computer, and no checkout stands behind
-# it there, so it takes the scan of its own text. The guard below
-# proves that this copy fires.
+# The structure of the packed file (QR-PACK-1, QR-PACK-2,
+# SEC-TRUST-3). The text of the file must equal the header of the
+# packer, one frame for each module, and the program body under
+# package main. The frames and the body come from the sources that
+# t/fuguseed/qr-program.t scans, so the packed file holds no line
+# that the scan of those sources did not read. This test holds no
+# second copy of that scan.
 
-# _code($text):
-#	The Perl code of $text, without the comments and the string
-#	literals. A single-quoted heredoc goes first: the word list
-#	of App::FuguSeed::List holds words such as "open" and "fork",
-#	and the module holds the list in such a heredoc. A "#" after
-#	a "$" is the last index of an array, and not a comment.
-#
-#	The strip knows three quote-like operators: q, qq and qw,
-#	with braces or with parentheses. It knows a match after =~,
-#	!~ or split. An apostrophe in another form, such as s///,
-#	pairs with a later apostrophe, and the pair deletes the code
-#	between the two. The function dies on a form that it cannot
-#	parse, because such a form can hide code from the scan
-#	below.
-#
-#	The first branch of the strip keeps the marker of a heredoc,
-#	and each guard below reads the stripped code. A marker in a
-#	comment or in a string goes away with the comment or the
-#	string, and it stops no scan.
-sub _code ($text)
+# _module($package):
+#	The path of the module $package under lib.
+sub _module ($package)
 {
-	$text =~ s/<<'(\w+)';.*?^\1$//msg;
+	( my $path = $package ) =~ s{::}{/}g;
 
-	$text =~ s{
-		  ( << ~? (?: ' \w+ ' | " \w+ " ) )
-		| ' [^'\\]* (?: \\. [^'\\]* )* '
-		| " [^"\\]* (?: \\. [^"\\]* )* "
-		| (?<! [\$\@\%&>] ) \b q [qw]? \s* \{ [^{}]* \}
-		| (?<! [\$\@\%&>] ) \b q [qw]? \s* \( [^()]* \)
-		| (?: =~ | !~ | \b split ) \K \s* m? / [^/\n]* / \w*
-		| (?<! \$ ) \# [^\n]*
-	}{ $1 // q{} }gex;
-
-	die "_code: the text holds another heredoc\n"
-	    if $text =~ / << ~? ['"A-Za-z_] /x;
-
-	my $form = _unknown($text);
-	die "_code: the text holds $form\n" if defined $form;
-
-	return $text;
+	return "$path.pm";
 }
 
-# _unknown($code):
-#	The name of the first form of the stripped $code that _code
-#	cannot parse, or undef. Each quote character of a known form
-#	leaves with that form, so a quote character that stays names
-#	a form that the strip missed.
-sub _unknown ($code)
+# _header():
+#	The HEADER constant of the packer, as the packer writes it
+#	into the packed file. scripts/pack holds the one copy of that
+#	text.
+sub _header ()
 {
-	return 'a quote character' if $code =~ /['"]/;
-	return 'a quote-like operator'
-	    if $code =~ m{
-		    (?<! [\$\@\%&>-] )
-		    \b (?: qq | qr | qx | qw | q | m | s | tr | y )
-		    \s* [(\{\[<|!\#'"/]
-	    }x;
+	my ($header) = _slurp(PACKER) =~ m{
+		^use [ ] constant [ ] HEADER [ ] => [ ] <<'HEADER';\n
+		(.*?)
+		^HEADER$
+	}msx;
+	BAIL_OUT( PACKER . ' holds no HEADER constant' )
+	    if !defined $header;
 
-	# The slash of a division and the slash of the defined-or
-	# operator follow a term, between two spaces. Each other
-	# slash can open a match.
-	( my $rest = $code ) =~ s{ (?<= [\w\)\]\}] ) [ ] //? [ ] }{}gx;
-	return 'a slash' if $rest =~ m{/};
-
-	return;
+	return $header;
 }
 
-# $contact:
-#	Each builtin of the file system, of process control, of the
-#	user information and the group information, of the network,
-#	and of System V IPC. The list holds syscall as well, because
-#	syscall calls any system call. It holds eof, because eof()
-#	and eof(ARGV) open the next file of @ARGV. It holds flock,
-#	fcntl and ioctl, because each one reaches past the bytes of
-#	a handle. The program must contact nothing but its three
-#	standard streams, so SEC-TRUST-3 forbids each one. A sigil
-#	before the name makes it a variable, and a fat comma after it
-#	makes it a key. Neither one is a call.
-my $contact = qr{
-	(?<! [\$\@\%] )
-	\b(?: open | sysopen | opendir | readdir | closedir | rewinddir
-	    | seekdir | telldir | glob | dbmopen | unlink | rename | link
-	    | symlink | readlink | mkdir | rmdir | chdir | chroot | chmod
-	    | chown | utime | truncate | umask | stat | lstat | eof
-	    | flock | fcntl | ioctl
-	    | system | exec | fork | qx | readpipe | pipe | wait | waitpid
-	    | kill | syscall
-	    | socket | socketpair | bind | connect | listen | accept
-	    | shutdown | recv | send | getsockname | getpeername
-	    | gethostbyname | gethostbyaddr | getservbyname
-	    | getpwnam | getpwuid | getpwent | getgrnam | getgrgid
-	    | getgrent | getlogin
-	    | msgget | msgsnd | msgrcv | semget | semop
-	    | shmget | shmread | shmwrite )\b
-	(?! \s* => )
-}x;
-
-# $file_test:
-#	A file test operator, such as -e or -r. Each one reads the
-#	file system, and -t reads the state of a filehandle
-#	(SEC-TRUST-3).
-my $file_test = qr{ (?<! [\w\$] ) - [rwxoRWXOezsfdlpSbctugkTBAMC] \b }x;
-
-# $environment:
-#	A read of the environment: %ENV, $ENV{...}, @ENV{...}, and
-#	the getenv function of POSIX (SEC-TRUST-3).
-my $environment = qr{ \b(?: ENV | getenv )\b }x;
-
-# $read:
-#	A read of another handle than standard input: the diamond
-#	operator in each of its forms, and readline with another
-#	handle. The diamond operator opens each file that @ARGV
-#	names, and bin/fuguseed-qr passes @ARGV to run (SEC-TRUST-3).
-my $read = qr{
-	<> | < (?! STDIN > ) \$? \w+ >
-	| \b readline \b (?! \s* \(? \s* \*? STDIN \b )
-}x;
-
-# $dynamic:
-#	A load of a file, such as require $path or require './x.pl'.
-#	The strip above deletes the path of a literal load, so the
-#	pattern takes each do and each require that is not a block,
-#	a version, or a bareword module (SEC-TRUST-3).
-my $dynamic = qr{
-	(?<! [\$\@\%>] ) \b(?: do | require )\b
-	(?! \s* \{ )
-	(?! \s+ v? [0-9] )
-	(?! \s+ [A-Za-z_] [\w:]* \s* ; )
-}x;
-
-# _hits($code):
-#	The name of each contact of the stripped $code with the
-#	computer, or an empty list (SEC-TRUST-3). The scan of the
-#	sources and the self-test below call this one function, so
-#	each pattern above has one place only.
-sub _hits ($code)
+# _frame($module):
+#	The frame of one module in the packed file: the BEGIN block
+#	that marks the module as loaded, and the source of the module
+#	in a block.
+sub _frame ($module)
 {
-	my @hits = $code =~ /($contact)/g;
-	push @hits, 'backtick'  if $code =~ /[`]/;
-	push @hits, 'ENV'       if $code =~ $environment;
-	push @hits, 'file test' if $code =~ $file_test;
-	push @hits, 'read'      if $code =~ $read;
-	push @hits, 'load'      if $code =~ $dynamic;
-
-	return @hits;
+	return "BEGIN { \$INC{'$module'} = __FILE__; }\n{\n"
+	    . _slurp("lib/$module") . "}\n\n";
 }
 
-# The guard of the scan. A pattern that matches nothing would take
-# each source, and the assertions below would pass on an empty scan.
-# One row proves each pattern of _hits.
-my @caught = (
-	[ q{open my $fh, '<', $path;}, 'open' ],
-	[ q{system 'ls';},             'system' ],
-	[ q{my $out = `ls`;},          'backtick' ],
-	[ q{my $home = $ENV{HOME};},   'ENV' ],
-	[ q{my $there = -e $path;},    'file test' ],
-	[ q{my $line = <$fh>;},        'read' ],
-	[ q{require $path;},           'load' ],
+my @module = map { _module($_) } grep { $_ ne 'main' } split q{ }, PACKAGES;
+my $text   = _slurp($packed);
+
+# scripts/dist writes one "our $VERSION" line under each package of
+# the tarball, so the packed file names the version of its release.
+# The comparison below reads the text without those lines.
+my $release = VERSION;
+my $stamp   = qr/^our[ ]\$VERSION[ ]=[ ]'\Q$release\E';\n/m;
+my $count   = () = $text =~ /$stamp/g;
+is( $count, scalar @module, 'each module of the packed file names the version' );
+
+( my $bare = $text ) =~ s/$stamp//g;
+my $body = _slurp(PROGRAM);
+$body =~ s/\A\#![^\n]*\n//;
+
+is(
+	$bare,
+	_header()
+	    . join( q{}, map { _frame($_) } @module )
+	    . "package main;\n\n"
+	    . $body,
+	'the packed file is the header, the six module frames, and the body'
 );
 
-my @clean = (
-	q{my $line = <STDIN>;},
-	q{require Digest::SHA;},
-	q{use v5.34;},
-);
-
-for my $case (@caught) {
-	my ( $sample, $reason ) = @{$case};
-	like( join( q{ }, _hits( _code($sample) ) ),
-		qr/\Q$reason\E/, "the scan catches $sample" );
-}
-
-for my $sample (@clean) {
-	is( join( q{ }, _hits( _code($sample) ) ),
-		q{}, "the scan takes $sample" );
-}
-
-my $code = _code( _slurp($packed) );
-
-# SEC-TRUST-3: the three standard streams are the one contact of the
-# packed file with the computer.
-is( join( q{ }, _hits($code) ),
-	q{}, 'the packed file contacts nothing but its three streams' );
+# SEC-TRUST-3: the header is the one part of the packed file that no
+# scan of a source covers, and it holds comment lines alone.
+my @line = grep { !m{\A(?:\#|\z)} } split /\n/, _header();
+is( "@line", q{}, 'the header of the packed file holds no code' );
 
 # QR-PACK-1 and QR-PACK-2: the file holds the six modules, in
 # dependency order, and the program body last. It holds no other
 # package.
-my @package = $code =~ /^package\s+([\w:]+)\s*;/mg;
+my @package = $text =~ /^package[ \t]+([\w:]+)[ \t]*;/mg;
 is( "@package", PACKAGES, 'the packed file holds the six modules and the body' );
 
-# TEST-PACK-2 and SEC-RELEASE-3: each load names a pragma, a module
-# of the packed set, or Digest::SHA. A pragma starts with a lower
-# case letter, and a version does as well.
+# TEST-PACK-2 and SEC-RELEASE-3: each load names a module of the
+# packed set, or a module of the core library of perl 5.034. A
+# version is no module: "use v5.34" gives the token "v5". The word
+# list of App::FuguSeed::List holds the words "use" and "require",
+# each one alone on its line, so the pattern takes a space or a tab
+# after the verb.
 my %packed = map { $_ => 1 } @package;
-my @loads = $code =~ /^\s*(?:use|require)\s+([\w:]+)/mg;
+my @loads  = $text =~ /^[ \t]*(?:use|require)[ \t]+([\w:]+)/mg;
 my @foreign = grep {
 	     !$packed{$_}
-	  && !/\A[a-z]/
-	  && $_ ne 'Digest::SHA'
+	  && !/\Av?[0-9]/
+	  && !Module::CoreList::is_core( $_, undef, 5.034 )
 } @loads;
 is( "@foreign", q{}, 'the packed file names no module outside the packed set' );
-unlike( $code, qr/(?<![\w:])Fugu::/,
+unlike( $text, qr/(?<![\w:])Fugu::/,
 	'the packed file names no Fugu:: module' );
 
 done_testing();

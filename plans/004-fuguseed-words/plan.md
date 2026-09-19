@@ -6,6 +6,12 @@ Proposed. No part lands now. It waits on plan 003 for the `t/scripts/*.t` glob
 of `TEST_GLOBS`. The new test `t/scripts/install.t` runs through that glob. The
 `man` target and the mandoc test exist already.
 
+Plan 003 deleted two lines of `.toolingrc`: the `dist.exe` line of
+`bin/fuguseed-words`, and the `dist.prereq` line of `Fugu`. This plan writes
+both lines again. Without the first one, the tarball installs no
+`fuguseed-words`. Without the second one, the install of the tarball misses the
+Fugu library.
+
 Implements: WORDS-PROGRAM, WORDS-BUILD, WORDS-CHECK, TEST-SHEET. Implements:
 WORDS-MANUAL without WORDS-MANUAL-6. Implements: LIST-SHARE without
 LIST-SHARE-1. Implements: SEC-TRUST without SEC-TRUST-2 and SEC-TRUST-3.
@@ -83,7 +89,7 @@ resolve through `Fugu::File->share_path`, in a checkout and after an install
 | `t/fuguseed/words-program.t`          | The program tests below                                                   |
 | `t/fuguseed/fixtures/sheet.html`      | The sheet of the shipped list on the fixed date                           |
 | `t/scripts/install.t`                 | The install test below                                                    |
-| `.toolingrc`                          | One `dist.share-extra` line for the sheet fixture                         |
+| `.toolingrc`                          | `dist.exe bin/fuguseed-words`, `dist.prereq Fugu`, and the sheet fixture  |
 | `spec/STATUS.md`                      | The cited units, and `t/scripts/install.t` in the Code roots of `list.md` |
 
 `.toolingrc` names the sheet fixture in `dist.share-extra`, because
@@ -112,9 +118,11 @@ the rule against a BIP39 passphrase. It ends with the pointer to
 
 `t/scripts/install.t` builds the distribution with
 `scripts/dist --out <temporary directory>`, installs it into a temporary prefix,
-and resolves the share path there (LIST-SHARE-2). It sits outside `t/fuguseed/`,
-because `.toolingrc` names `t/fuguseed` alone in `dist.testdir`, and
-`mk/local.mk` names `t/scripts/*.t` in `TEST_GLOBS`.
+and resolves the share path there (LIST-SHARE-2). It proves that the install
+writes `fuguseed-words` into the prefix, so a missing `dist.exe` line of
+`.toolingrc` fails the test. It sits outside `t/fuguseed/`, because `.toolingrc`
+names `t/fuguseed` alone in `dist.testdir`, and `mk/local.mk` names
+`t/scripts/*.t` in `TEST_GLOBS`.
 
 `t/fuguseed/words-program.t` runs the program as a child and holds:
 

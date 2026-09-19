@@ -90,8 +90,8 @@ use constant HEADER => <<'HEADER';
 #
 # The file holds the program and the six modules that it loads. Each
 # module keeps its source, under a BEGIN block that marks the module
-# as loaded. Digest::SHA is the one module that the file loads, and
-# every perl since 5.10 holds it.
+# as loaded. The file loads Digest::SHA and the pragmas of its
+# source, and no other module. Every perl since 5.34 holds each one.
 #
 # The file opens no file, it starts no process, and it reads no
 # environment variable. The three standard streams are its one
@@ -107,6 +107,19 @@ GetOptions(
 	'version=s' => \$version,
 	'out=s'     => \$out,
 ) or die "usage: pack [--version X.Y.Z] [--out DIR]\n";
+
+# _status($status):
+#	The report of a child status: the reason that the child did
+#	not run, the signal that killed it, or its exit code. system
+#	and $? both answer -1 when no child ran, and -1 >> 8 names no
+#	exit code.
+sub _status ($status)
+{
+	return "did not run: $!"                     if $status == -1;
+	return 'died on signal ' . ( $status & 127 ) if $status & 127;
+
+	return 'exited ' . ( $status >> 8 );
+}
 
 # _read($path):
 #	The whole file as text.
@@ -124,16 +137,18 @@ sub _read ($path)
 #	Run the build with the two values, and give the path of the
 #	tarball that it writes. The build reports each line that it
 #	writes, so make dist names the tarball as well as the packed
-#	file.
+#	file. The report prints before the close: a failed build is
+#	the run that needs its report most.
 sub _build ( $version, $out )
 {
 	open my $ph, '-|', $^X, DIST, '--version', $version, '--out', $out
 	    or die 'pack: cannot run ' . DIST . ": $!\n";
 	my @line = <$ph>;
-	close $ph
-	    or die 'pack: ' . DIST . ' exited ' . ( $? >> 8 ) . "\n";
 
 	print @line or die "pack: cannot report the build: $!\n";
+	close $ph
+	    or die 'pack: ' . DIST . q{ } . _status($?) . "\n";
+
 	chomp @line;
 
 	my $built = @line ? $line[-1] : q{};
@@ -154,7 +169,7 @@ sub _extract ( $tarball, $temp )
 
 	my $status = system 'tar', '-xzf', $tarball, '-C', $temp;
 	$status == 0
-	    or die 'pack: tar exited ' . ( $status >> 8 ) . "\n";
+	    or die 'pack: tar ' . _status($status) . "\n";
 
 	my ($name) = $tarball =~ m{([^/]+)[.]tar[.]gz\z}a
 	    or die "pack: '$tarball' is no tarball\n";
@@ -191,6 +206,13 @@ sub _write ( $file, $tree )
 
 	return;
 }
+
+# The build holds use v5.36, and _build runs it with the perl that
+# runs this script. This script keeps use v5.34, because a bootstrap
+# script of FuguBSD takes the floor of the workspace, so the check
+# belongs here.
+$] >= 5.036
+    or die 'pack: ' . DIST . " needs perl v5.36 or later\n";
 
 my $tarball = _build( $version, $out );
 my $temp    = File::Spec->catdir( $out, 'pack' );

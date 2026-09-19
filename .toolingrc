@@ -13,4 +13,3 @@ dist.testdir  t/fuguseed
 # shipped test needs one line here. The key names one file.
 dist.share-extra t/fuguseed/fixtures/qr/vector4.picture
 dist.share-extra t/fuguseed/fixtures/qr/vector4.output
-dist.prereq   Fugu

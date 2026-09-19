@@ -4,7 +4,7 @@ App::FuguSeed - make BIP39 seed words with dice, and turn them into a SeedQR
 
 =head1 SYNOPSIS
 
-    echo "$words" | fuguseed-qr
+    fuguseed-qr
 
 =head1 DESCRIPTION
 
