@@ -9,7 +9,9 @@
 # it holds the text of the packed file to the header of the packer
 # and to the sources of the checkout, line for line. The comparison
 # of the header reads its text out of the packer, so the test pins
-# the shebang to a literal name.
+# the shebang to a literal name. The prose of that header is
+# unverified text: _header states what the comparison proves, and
+# what it leaves to a person.
 #
 # The test sits outside t/fuguseed/, because .toolingrc names
 # t/fuguseed alone in dist.testdir: a test of a script of this
@@ -49,9 +51,9 @@ use constant BASE    => '/usr/bin/perl';
 use constant SHEBANG => '#!' . BASE;
 
 # BOUND:
-#	The bound on the lines of the packed file outside the word
-#	list block. One person reads those lines in full
-#	(SEC-RELEASE-3).
+#	The bound of SEC-RELEASE-3 on the lines of the packed file
+#	outside the word list block. That rule gives the number and
+#	its derivation, and this constant repeats the number alone.
 use constant BOUND => 1200;
 
 # Test vector 4 of the SeedQR specification.
@@ -216,9 +218,19 @@ sub _module ($package)
 
 # _header():
 #	The HEADER constant of the packer, as the packer writes it
-#	into the packed file. scripts/pack holds the one copy of that
-#	text, so a comparison with it catches no change of the
-#	constant. The shebang assertion below reads the packed file.
+#	into the packed file. The comparison below proves one fact:
+#	the packed file holds that constant unchanged. It proves no
+#	claim of the prose, because the expected text and the packed
+#	text come from one file. The prose of the header is
+#	unverified text.
+#
+#	Two assertions bound that gap. The shebang assertion reads
+#	the packed file, and its expected value comes from this test.
+#	The assertion after the comparison holds the header to
+#	comment lines alone, so no code hides in it. The claims of
+#	the prose stay with the person who changes the constant. That
+#	person must read the text against the program, because this
+#	test cannot.
 sub _header ()
 {
 	my ($header) = _slurp(PACKER) =~ m{
@@ -332,8 +344,10 @@ is(
 
 # SEC-TRUST-3: the packer writes the header, the BEGIN line and the
 # two braces of each frame, and the "package main;" line. No scan of
-# a source covers those lines. The comparison above holds each one to
-# its expected text, and the header must hold comment lines alone.
+# a source covers those lines. The comparison above holds the BEGIN
+# lines, the braces and the "package main;" line to the text of this
+# test. It holds the header to the constant of the packer alone, so
+# the assertion below keeps that header to comment lines.
 my @line = grep { !m{\A(?:\#|\z)} } split /\n/, _header();
 is( "@line", q{}, 'the header of the packed file holds no code' );
 
@@ -371,10 +385,10 @@ is( join( q{ }, _foreign( \%packed, @loads ) ),
 unlike( $text, qr/(?<![\w:])Fugu::/,
 	'the packed file names no Fugu:: module' );
 
-# SEC-RELEASE-3: one person reads the packed file in full. The word
-# list of LIST-MODULE-1 is one heredoc block of the file, and the
-# DIGEST constant beside it pins that block, so the person reads the
-# lines outside the block. The bound holds that count.
+# TEST-PACK-6: the lines of the packed file outside the word list
+# block of LIST-MODULE-1 stay below the bound of SEC-RELEASE-3. The
+# block holds the 2048 words in one heredoc, and its length does not
+# change, so this count measures the rest of the file.
 my ( $marker, $block ) = $text =~ m{<<'(\w+)';\n(.*?)^\1$}ms;
 defined $block or BAIL_OUT('the packed file holds no heredoc block');
 my $whole = () = $text =~ /\n/g;

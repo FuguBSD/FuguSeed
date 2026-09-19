@@ -38,7 +38,10 @@ specifies the release of the packed file (D-07).
   the step (QR-MANUAL-1).
 - **SEC-RELEASE-3** — The file is short enough for one person to read in full
   (D-07). It holds the modules of this repository alone, so no dependency
-  crosses to the air-gapped computer with it. The word list of LIST-MODULE-1 is
-  one block of 2048 lines, and the `DIGEST` constant beside it pins that block.
-  The person reads the lines outside the block, and TEST-PACK-6 holds that count
-  below a bound.
+  crosses to the air-gapped computer with it. No part of the file checks another
+  part. The signed manifest of SEC-RELEASE-2 is the one check of its bytes.
+  TEST-PACK-6 counts the lines of the file outside the word list block of
+  LIST-MODULE-1, and it holds that count below 1200. The block holds the 2048
+  words of LIST-SOURCE-1, and its length does not change, so the count measures
+  the rest of the file. That count is 1008 lines, and the bound of 1200 is 192
+  lines above it.

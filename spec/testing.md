@@ -66,8 +66,8 @@ manuals. Each unit that a test proves points here.
   its source. The source must hold the package name that PAUSE indexes, and no
   code.
 - **TEST-PACK-6** — The tests must count the lines of the packed file outside
-  the word list of LIST-MODULE-1. That count must stay below a fixed bound
-  (SEC-RELEASE-3).
+  the word list block of LIST-MODULE-1. That count must stay below the bound
+  that SEC-RELEASE-3 gives.
 
 <a id="test-manual"></a>
 

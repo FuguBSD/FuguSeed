@@ -14,9 +14,15 @@ use warnings;
 use experimental 'signatures';
 no feature qw(indirect multidimensional bareword_filehandles);
 use Test::More;
+use Module::CoreList ();
 
 use constant MODULE => 'App::FuguSeed';
 use constant FILE   => 'App/FuguSeed.pm';
+
+# The interpreter before the load. The assertions of QR-PACK-4 below
+# read what the load added to it.
+my @directory = @INC;
+my %preloaded = %INC;
 
 require_ok(MODULE) or BAIL_OUT('the lead module does not compile');
 
@@ -36,8 +42,8 @@ like( $source, qr/^package[ \t]+\Q$module\E[ \t]*;$/m,
 # QR-PACK-4: the module holds no code, so scripts/pack packs no part
 # of it. t/scripts/pack.t proves that the packed file holds the six
 # modules of the program and no other package. Each line outside the
-# comments is the package statement, a pragma, or the true value at
-# the end. A subroutine, a top-level statement, and a BEGIN block
+# comments is the package statement, a pragma line, or the true value
+# at the end. A subroutine, a top-level statement, and a BEGIN block
 # each fail this check.
 my @statement = grep { !m{\A\s*(?:\#|\z)} } split /\n/, $source;
 my @code      = grep {
@@ -46,5 +52,43 @@ my @code      = grep {
 	  && !/\A1;\z/
 } @statement;
 is( "@code", q{}, 'the lead module holds no code' );
+
+# QR-PACK-4: a pragma line carries code as well, so the filter above
+# proves too little on its own. "use constant FOO => 1" writes a
+# subroutine into this package. "use parent" gives the package a
+# parent class. "use lib" adds a directory to @INC, and "use if"
+# loads another module. The four assertions below read each of those
+# effects out of the interpreter, so this test needs no list of the
+# pragma names. Each one writes the package name in full: a name out
+# of the MODULE constant would need the pragma no strict 'refs'.
+
+# _routine($entry):
+#	The stash entry $entry holds a subroutine. Perl keeps an
+#	inlinable constant as a reference, and every other name as a
+#	glob.
+sub _routine ($entry)
+{
+	return 1 if ref $entry;
+
+	return defined *{$entry}{CODE} ? 1 : 0;
+}
+
+my $stash   = \%App::FuguSeed::;
+my @routine = sort grep { _routine( $stash->{$_} ) } keys %{$stash};
+is( "@routine", q{}, 'the lead module defines no subroutine' );
+
+is( "@App::FuguSeed::ISA", q{}, 'the lead module has no parent class' );
+
+is( "@INC", "@directory", 'the lead module adds no directory to @INC' );
+
+my @outside;
+for my $path ( grep { !$preloaded{$_} } sort keys %INC ) {
+	next if $path eq FILE;
+	( my $name = $path ) =~ s/\.pm\z//;
+	$name                =~ s{/}{::}g;
+	push @outside, $name
+	    unless Module::CoreList::is_core( $name, undef, 5.034 );
+}
+is( "@outside", q{}, 'the lead module loads core modules alone' );
 
 done_testing();
