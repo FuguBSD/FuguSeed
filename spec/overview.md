@@ -67,7 +67,9 @@ one use (D-03).
 - **OVW-VOCABULARY-3** — A test reads the banned words from this document and
   scans every tracked file for them. The scan skips a code span, a code block,
   and a file that a pack of FuguBSD/Tooling owns. It also skips a record under
-  `docs/research/`, a file under `ports/`, and the rule that names the words.
+  `docs/research/`, a file under `ports/`, a file of a vendored copy, and the
+  rule that names the words. A `SOURCE.md` that forbids an edit of its directory
+  marks such a copy, and the scan reads that record itself.
 - **OVW-VOCABULARY-4** — The artifacts call the machine that accepts the 12
   words "the device". They call the three dice YELLOW, BLUE, and RED. They use
   "dice" for one die and for several. The seed words are the BIP39 mnemonic of
