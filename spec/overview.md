@@ -69,7 +69,10 @@ one use (D-03).
   and a file that a pack of FuguBSD/Tooling owns. It also skips a record under
   `docs/research/`, a file under `ports/`, a file of a vendored copy, and the
   rule that names the words. A `SOURCE.md` that forbids an edit of its directory
-  marks such a copy, and the scan reads that record itself.
+  marks such a copy. That record gives one table row for each file of the copy,
+  with the name and the SHA-256 of it. The scan skips a file of such a row, and
+  every other file of the directory stays inside the scan. The scan reads each
+  record itself.
 - **OVW-VOCABULARY-4** — The artifacts call the machine that accepts the 12
   words "the device". They call the three dice YELLOW, BLUE, and RED. They use
   "dice" for one die and for several. The seed words are the BIP39 mnemonic of
