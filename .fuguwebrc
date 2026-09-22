@@ -1,0 +1,47 @@
+# The website, built by fuguweb(1).
+
+site = FuguSeed
+
+nav "index.html" {
+	label = Home
+}
+
+nav "manuals.html" {
+	label = Manuals
+}
+
+page "index.html" {
+	title = Home
+	body  = index.body.html
+}
+
+page "manuals.html" {
+	title = Manuals
+	index = yes
+}
+
+page "404.html" {
+	title    = Not found
+	body     = 404.body.html
+	unlinked = yes
+}
+
+manuals "The offline procedure" {
+	dir    = man/fuguseed
+	anchor = procedure
+}
+
+manuals "The word sheet" {
+	dir    = man/fuguseed-words
+	anchor = words
+}
+
+manuals "The SeedQR" {
+	dir    = man/fuguseed-qr
+	anchor = qr
+}
+
+modules "Modules" {
+	dir    = lib/App/FuguSeed
+	anchor = modules
+}
