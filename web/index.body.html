@@ -1,8 +1,8 @@
 <h1>FuguSeed</h1>
 
 <p>FuguSeed makes BIP39 seed words with three dice on paper, and turns
-them into a SeedQR. A seed phrase that a program generates depends on
-the random source of that program. FuguSeed contributes no entropy:
+them into a SeedQR. Seed words that a program generates depend on the
+random source of that program. FuguSeed contributes no entropy:
 the dice give it, and the paper holds the words.</p>
 
 <p><code>fuguseed-words</code> builds and checks a printed word sheet.
@@ -28,9 +28,10 @@ that FuguPass reads.</p>
 
 <pre><code>cpanm --notest Fugu App::FuguSeed</code></pre>
 
-<p>A release also holds the packed <code>fuguseed-qr</code> file, its
-SHA-256 digest, and the signature of the digest. Copy that one file to
-the air-gapped computer.</p>
+<p>A release also holds the packed <code>fuguseed-qr</code> file, and
+the signed SHA256 manifest of the release names it. Copy that one file
+to the air-gapped computer. Compare its digest with the manifest
+before the first run, as fuguseed-qr(1) states.</p>
 
 <h2>Documentation</h2>
 
