@@ -1,0 +1,43 @@
+<h1>FuguSeed</h1>
+
+<p>FuguSeed makes BIP39 seed words with three dice on paper, and turns
+them into a SeedQR. A seed phrase that a program generates depends on
+the random source of that program. FuguSeed contributes no entropy:
+the dice give it, and the paper holds the words.</p>
+
+<p><code>fuguseed-words</code> builds and checks a printed word sheet.
+On that sheet, one throw of a d8 and two d16 selects one of the 2048
+words, with no arithmetic. <code>fuguseed-qr</code> turns the 12 words
+into a Standard SeedQR, zone by zone, in a terminal, so a person can
+draw it on paper.</p>
+
+<p>The two programs have two trust levels.
+<code>fuguseed-words</code> sees no seed word, so it can run on any
+computer. It builds on the <a href="https://lib.fugubsd.org/">Fugu</a>
+library. <code>fuguseed-qr</code> sees the words, so it must run on an
+air-gapped computer only. It is one packed file on core Perl v5.34,
+with no dependency.</p>
+
+<p>FuguSeed is a companion of
+<a href="https://pass.fugubsd.org/">FuguPass</a>: it makes the master
+that FuguPass reads.</p>
+
+<h2>Installation</h2>
+
+<p>Install Fugu and FuguSeed from CPAN with cpanm:</p>
+
+<pre><code>cpanm --notest Fugu App::FuguSeed</code></pre>
+
+<p>A release also holds the packed <code>fuguseed-qr</code> file, its
+SHA-256 digest, and the signature of the digest. Copy that one file to
+the air-gapped computer.</p>
+
+<h2>Documentation</h2>
+
+<ul>
+<li>The <a href="manuals.html">manuals</a>: the offline procedure, the
+two commands, and every module</li>
+<li>The <a href="https://github.com/FuguBSD/FuguSeed">source repository</a>
+and the <a href="https://github.com/FuguBSD/FuguSeed/blob/main/spec/index.md">specification</a></li>
+<li>The <a href="https://github.com/FuguBSD/FuguSeed/releases">releases</a></li>
+</ul>
