@@ -10,8 +10,11 @@ Implements: LAST-PROGRAM, LAST-WORD, LAST-PACK, LAST-MANUAL, TEST-LAST.
 Extends: QR-PROGRAM, QR-MNEMONIC, QR-PACK, QR-MANUAL, LIST-MODULE, SEC-TRUST,
 SEC-CHANNELS, SEC-RELEASE, TEST-QR, TEST-PACK, WORDS-MANUAL.
 
-The implementation also edits the citation-only units OVW-PURPOSE, OVW-SCOPE,
-and OVW-RISKS. Their state stays `n-a`.
+Until the implementation lands, each extended unit describes the code as built.
+So the rules QR-MNEMONIC-2, QR-MNEMONIC-4, QR-PROGRAM-4, QR-MANUAL-1,
+WORDS-MANUAL-3, and SEC-CHANNELS-2 say that `fuguseed-qr` finds the check word.
+D-02 describes the target. The implementation lands their new text with its
+code, per the `Extends:` contract of spec/CLAUDE.md.
 
 ## Purpose
 
@@ -129,13 +132,6 @@ rule and its new content.
   Then `fuguseed-qr` runs on the 12 words.
 - WORDS-MANUAL-5: the procedure ends with pointers to `fuguseed-last(1)` and
   `fuguseed-qr(1)`.
-
-The citation-only units change too. OVW-PURPOSE-2 names three programs.
-OVW-PURPOSE-3 adds `fuguseed-last`, and OVW-PURPOSE-4 names it as the finder.
-OVW-SCOPE names the packed file `fuguseed-last`. OVW-RISKS-2 states this limit:
-the search consumes the checksum of the words that the person types into
-`fuguseed-last`. `fuguseed-qr` rejects a different word in its own run in 15
-cases of 16. OVW-RISKS-4 names both programs.
 
 ## Tests
 

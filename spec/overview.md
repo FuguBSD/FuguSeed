@@ -10,16 +10,17 @@ vocabulary, and the accepted limits of the project.
 
 - **OVW-PURPOSE-1** — FuguSeed helps one person make 12 BIP39 seed words with
   three dice, on paper, and turn them into a Standard SeedQR.
-- **OVW-PURPOSE-2** — Two programs exist, with two trust levels (D-01).
+- **OVW-PURPOSE-2** — Three programs exist, with two trust levels (D-01).
   `fuguseed-words` builds a printed word sheet from the official English word
   list, and it checks a built sheet. Its manual holds the offline procedure. It
   sees no seed word, so it can run on any computer.
-- **OVW-PURPOSE-3** — `fuguseed-qr` reads 12 seed words and prints a Standard
-  SeedQR as text, zone by zone, so a person can draw it on paper. It sees the
-  words, so it runs on an air-gapped computer only.
+- **OVW-PURPOSE-3** — `fuguseed-last` reads words 1 to 11 and two dice faces,
+  and it prints the check word. `fuguseed-qr` reads 12 seed words and prints a
+  Standard SeedQR as text, zone by zone, so a person can draw it on paper. These
+  two programs see the words, so they run on an air-gapped computer only.
 - **OVW-PURPOSE-4** — No program contributes entropy to a seed word (D-02). The
-  dice give the entropy, the paper holds the words, and `fuguseed-qr` finds the
-  check word.
+  dice give the entropy, the paper holds the words, and `fuguseed-last` finds
+  the check word. `fuguseed-qr` rejects a wrong checksum.
 
 <a id="ovw-scope"></a>
 
@@ -34,6 +35,8 @@ The scope of FuguSeed is:
   ([WORDS-MANUAL](words.md#words-manual)).
 - The Standard SeedQR of 12 words, as text that a person draws
   ([QR-TEXT](qr.md#qr-text)).
+- The packed single file `fuguseed-last`, which prints the check word on the
+  air-gapped computer ([LAST-PACK](last.md#last-pack)).
 - The packed single file `fuguseed-qr` for the air-gapped computer
   ([QR-PACK](qr.md#qr-pack)).
 
@@ -85,10 +88,13 @@ one use (D-03).
 - **OVW-RISKS-1** — A hand-drawn code can misdecode. The scan on the device and
   the scan in the consumer are the proof of the drawing, and no other proof
   exists.
-- **OVW-RISKS-2** — The search of the check word consumes the checksum, so the
-  checksum detects no error in words 1 to 11. The person compares the device
-  with the paper before any use (WORDS-MANUAL-4).
+- **OVW-RISKS-2** — The person types words 1 to 11 into `fuguseed-last`. The
+  search of the check word consumes the checksum, so the checksum detects no
+  error in that run. In the `fuguseed-qr` run, a word that the person types
+  wrong changes the checksum, so `fuguseed-qr` rejects it in 15 cases of 16. The
+  person compares the device with the paper before any use (WORDS-MANUAL-4).
 - **OVW-RISKS-3** — A biased die lowers the entropy a little. The dice are the
   one source of entropy, and no program measures them or corrects them.
-- **OVW-RISKS-4** — `fuguseed-qr` trusts the computer that it runs on. The air
-  gap is the whole defense ([SEC-TRUST](security.md#sec-trust)).
+- **OVW-RISKS-4** — `fuguseed-last` and `fuguseed-qr` trust the computer that
+  they run on. The air gap is the whole defense
+  ([SEC-TRUST](security.md#sec-trust)).

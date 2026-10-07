@@ -1,8 +1,9 @@
 # Testing
 
 The tests prove the specification. This document holds every rule that binds the
-tests: the word list, the sheet, the SeedQR pipeline, the packed file, and the
-manuals. Each unit that a test proves points here.
+tests. The rules cover the word list, the sheet, the SeedQR pipeline, the check
+word, the packed files, and the manuals. Each unit that a test proves points
+here.
 
 <a id="test-list"></a>
 

@@ -1,8 +1,8 @@
 # Security
 
 The seed words are the whole secret. This document specifies the trust rules of
-the two programs (D-01) and the channels that carry the words (D-11). It also
-specifies the release of the packed file (D-07).
+the three programs (D-01) and the channels that carry the words (D-11). It also
+specifies the release of the packed files (D-07).
 
 <a id="sec-trust"></a>
 
