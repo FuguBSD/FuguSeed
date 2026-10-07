@@ -1,6 +1,6 @@
 # The word list
 
-Both programs read the official English word list of BIP39. This document
+Each program reads the official English word list of BIP39. This document
 specifies the list, its two shipped copies, and the module that serves it
 (D-10).
 
