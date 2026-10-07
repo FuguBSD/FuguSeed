@@ -20,17 +20,19 @@ and the manual.
   standard input, separated by spaces
   ([SEC-CHANNELS](security.md#sec-channels)).
 - **QR-PROGRAM-4** — The program writes the result to standard output: the
-  SeedQR text, or the check word when the checksum fails (QR-MNEMONIC-4). A
-  failure prints one exact line to standard error and exits 1
+  SeedQR text. A wrong checksum is a failure (QR-MNEMONIC-4). A failure prints
+  one exact line to standard error and exits 1
   ([SEC-CHANNELS](security.md#sec-channels)).
 - **QR-PROGRAM-5** — The program and every module that it loads run on core Perl
   v5.34 (D-07). They load `Digest::SHA` and no other module outside this
   repository ([SEC-TRUST](security.md#sec-trust)).
 - **QR-PROGRAM-6** — Each module of the program has one concern.
-  `App::FuguSeed::Mnemonic` holds the words. `App::FuguSeed::Codewords` holds
-  the data and error correction codewords. `App::FuguSeed::Matrix` holds the
-  module grid. `App::FuguSeed::Text` holds the output, and `App::FuguSeed::QR`
-  holds the flow. Every function is pure: it takes values and returns values.
+  `App::FuguSeed::Mnemonic` holds only the functions that both programs call:
+  the word checks, the indexes, and the checksum. `App::FuguSeed::Codewords`
+  holds the data and error correction codewords. `App::FuguSeed::Matrix` holds
+  the module grid. `App::FuguSeed::Text` holds the output. `App::FuguSeed::QR`
+  holds the flow, with the checksum check and the digit string of the 12 words.
+  Every function is pure: it takes values and returns values.
 - **QR-PROGRAM-7** — Every constant of the QR standard sits at the top of the
   module that uses it. A comment names the table of the standard that it comes
   from.
@@ -43,17 +45,20 @@ and the manual.
   the list of LIST-MODULE-1. Another count or an unknown word is a failure.
 - **QR-MNEMONIC-2** — The 12 indexes give 132 bits: 128 bits of entropy and 4
   bits of checksum. The checksum must equal the first 4 bits of the SHA-256 of
-  the 16 entropy bytes, as BIP39 states. A wrong checksum is not a failure: the
-  program finds the check word (QR-MNEMONIC-4).
+  the 16 entropy bytes, as BIP39 states. A wrong checksum is a failure
+  (QR-MNEMONIC-4).
 - **QR-MNEMONIC-3** — The digit string is the 12 indexes, 0-based, each as 4
   decimal digits with leading zeros, in word order: 48 digits.
-- **QR-MNEMONIC-4** — When the checksum fails, the program must find the check
-  word (D-02). The YELLOW block and the BLUE row of the typed word 12 give 7
-  bits of entropy. The RED column gives the 4 checksum bits, so exactly one word
-  of that row is valid. The program must print that word on standard output and
-  exit 0. It prints no SeedQR in that run.
+- **QR-MNEMONIC-4** — On a wrong checksum, the failure line reads
+  `fuguseed-qr: the checksum of the 12 words fails`. A wrong word at any
+  position can give that failure, so the line names no position. The program
+  prints no SeedQR. `fuguseed-last` finds the check word
+  ([LAST-WORD](last.md#last-word)).
 
-The tests of this unit live in [TEST-QR](testing.md#test-qr).
+`App::FuguSeed::Mnemonic` holds the word check and the checksum, and
+`fuguseed-last` calls them too. `App::FuguSeed::QR` holds the checksum check,
+the digit string, and the failure line. The tests of this unit live in
+[TEST-QR](testing.md#test-qr).
 
 <a id="qr-codewords"></a>
 
@@ -133,8 +138,8 @@ The tests of this unit live in [TEST-QR](testing.md#test-qr).
 - **QR-PACK-3** — Two packs of one tree are byte-equal. The file holds no
   timestamp and no build path.
 - **QR-PACK-4** — `App::FuguSeed` is the lead module of the distribution. PAUSE
-  indexes the distribution through its package. The module holds no code, and
-  the packed file holds no part of it.
+  indexes the distribution through its package. The module holds no code, and no
+  packed file holds a part of it.
 
 The release of the file lives in [SEC-RELEASE](security.md#sec-release), and its
 tests in [TEST-PACK](testing.md#test-pack).
@@ -145,7 +150,13 @@ tests in [TEST-PACK](testing.md#test-pack).
 
 - **QR-MANUAL-1** — `man/fuguseed-qr/fuguseed-qr.1` documents the program, the
   input, the exit codes, and the digest check of SEC-RELEASE-2. It documents the
-  two results: the SeedQR and the check word.
+  one result, the SeedQR, and the failure of QR-MNEMONIC-4. On that failure, the
+  person compares the 12 typed words with the paper. The person corrects a typed
+  word that is different from the paper, and runs the program again. When the
+  typed words agree with the paper, a word on the paper is wrong. For the words
+  of the procedure, word 12 is wrong, and the manual points at `fuguseed(7)` for
+  the steps of WORDS-MANUAL-3. The manual points at `fuguseed-last(1)` for the
+  check word.
 - **QR-MANUAL-2** — The manual holds the drawing procedure in ASD-STE100 (D-13).
   The procedure names the air-gapped computer, the printed 25 x 25 template, and
   the marker. It draws one zone at a time and counts the dark modules of each

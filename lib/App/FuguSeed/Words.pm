@@ -38,10 +38,10 @@ use Fugu::File              ();
 #
 # The program sees no seed word, so it can run on any computer (D-01).
 # No module that it loads maps 12 words to anything, and none of them
-# loads the mnemonic module of fuguseed-qr (SEC-TRUST-1).
+# loads the mnemonic module or the check word module (SEC-TRUST-1).
 # t/fuguseed/words-program.t proves the rule at the load, and it scans
-# each source of the program for the name of that module
-# (TEST-PACK-3). The name is therefore absent from this file.
+# each source of the program for the names of those modules
+# (TEST-PACK-3). The names are therefore absent from this file.
 
 # NAME and DIST:
 #	The name of the program in a diagnostic, and the name of the

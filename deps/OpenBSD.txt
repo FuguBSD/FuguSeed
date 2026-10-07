@@ -5,8 +5,9 @@
 # signify tier of the runtime entry needs no package.
 #
 # The runtime dist entry is the Fugu library that fuguseed-words
-# builds on (D-06). bin/fuguseed-qr and every module that it loads
-# run on core perl, with no dependency (QR-PROGRAM-5, D-07).
+# builds on (D-06). bin/fuguseed-last, bin/fuguseed-qr, and every
+# module that they load run on core perl, with no dependency
+# (LAST-PROGRAM-5, QR-PROGRAM-5, D-07).
 
 runtime dist https://github.com/FuguBSD/Fugu/releases/latest/download/Fugu.tar.gz
 

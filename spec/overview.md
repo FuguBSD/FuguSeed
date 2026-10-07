@@ -90,9 +90,9 @@ one use (D-03).
   exists.
 - **OVW-RISKS-2** — The person types words 1 to 11 into `fuguseed-last`. The
   search of the check word consumes the checksum, so the checksum detects no
-  error in that run. In the `fuguseed-qr` run, a word that the person types
-  wrong changes the checksum, so `fuguseed-qr` rejects it in 15 cases of 16. The
-  person compares the device with the paper before any use (WORDS-MANUAL-4).
+  error in that run. The `fuguseed-qr` run checks the checksum again, and the
+  rationale of D-02 states how often it rejects a wrong word. The person
+  compares the device with the paper before any use (WORDS-MANUAL-4).
 - **OVW-RISKS-3** — A biased die lowers the entropy a little. The dice are the
   one source of entropy, and no program measures them or corrects them.
 - **OVW-RISKS-4** — `fuguseed-last` and `fuguseed-qr` trust the computer that

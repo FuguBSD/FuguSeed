@@ -7,16 +7,17 @@ the dice give it, and the paper holds the words.</p>
 
 <p><code>fuguseed-words</code> builds and checks a printed word sheet.
 On that sheet, one throw of a d8 and two d16 selects one of the 2048
-words, with no arithmetic. <code>fuguseed-qr</code> turns the 12 words
-into a Standard SeedQR, zone by zone, in a terminal, so a person can
-draw it on paper.</p>
+words, with no arithmetic. <code>fuguseed-last</code> prints word 12,
+the check word, from words 1 to 11 and two dice.
+<code>fuguseed-qr</code> turns the 12 words into a Standard SeedQR,
+zone by zone, in a terminal, so a person can draw it on paper.</p>
 
-<p>The two programs have two trust levels.
+<p>The three programs have two trust levels.
 <code>fuguseed-words</code> sees no seed word, so it can run on any
 computer. It builds on the <a href="https://lib.fugubsd.org/">Fugu</a>
-library. <code>fuguseed-qr</code> sees the words, so it must run on an
-air-gapped computer only. It is one packed file on core Perl v5.34,
-with no dependency.</p>
+library. <code>fuguseed-last</code> and <code>fuguseed-qr</code> see
+the words, so they must run on an air-gapped computer only. Each one
+is one packed file on core Perl v5.34, with no dependency.</p>
 
 <p>FuguSeed is a companion of
 <a href="https://pass.fugubsd.org/">FuguPass</a>: it makes the master
@@ -28,16 +29,17 @@ that FuguPass reads.</p>
 
 <pre><code>cpanm --notest Fugu App::FuguSeed</code></pre>
 
-<p>A release also holds the packed <code>fuguseed-qr</code> file, and
-the signed SHA256 manifest of the release names it. Copy that one file
-to the air-gapped computer. Compare its digest with the manifest
-before the first run, as fuguseed-qr(1) states.</p>
+<p>A release also holds the packed <code>fuguseed-last</code> and
+<code>fuguseed-qr</code> files, and the signed SHA256 manifest of the
+release names both. Copy the two files to the air-gapped computer.
+Compare the digest of each file with the manifest before the first
+run, as fuguseed-last(1) and fuguseed-qr(1) state.</p>
 
 <h2>Documentation</h2>
 
 <ul>
 <li>The <a href="manuals.html">manuals</a>: the offline procedure, the
-two commands, and every module</li>
+three commands, and every module</li>
 <li>The <a href="https://github.com/FuguBSD/FuguSeed">source repository</a>
 and the <a href="https://github.com/FuguBSD/FuguSeed/blob/main/spec/index.md">specification</a></li>
 <li>The <a href="https://github.com/FuguBSD/FuguSeed/releases">releases</a></li>

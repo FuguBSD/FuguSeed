@@ -4,9 +4,10 @@
 # The modules and the scripts join the lint and the format scan
 PERL_SRC_DIRS	= lib scripts
 
-# make dist builds the packed fuguseed-qr file as well as the tarball
-# (QR-PACK). scripts/pack runs scripts/dist first, with the same
-# values, and it packs the tarball that the build writes.
+# make dist builds the packed fuguseed-last and fuguseed-qr files as
+# well as the tarball (LAST-PACK, QR-PACK). scripts/pack runs
+# scripts/dist first, with the same values, and it packs the tarball
+# that the build writes.
 DIST		= scripts/pack
 
 # The full test tier set of make test. A repository gate reads the

@@ -31,9 +31,8 @@ here.
 
 - **TEST-QR-1** — The tests must hold the two 12-word test vectors of the SeedQR
   specification to their digit strings. They must reject a wrong count and an
-  unknown word. For each vector, they must replace word 12 with each other word
-  of its BLUE row. They must prove that the program names word 12 of the vector
-  as the check word.
+  unknown word. For each vector, each other word of the BLUE row of word 12 must
+  fail with the line of QR-MNEMONIC-4.
 - **TEST-QR-2** — The tests must hold the 44 codewords of test vector 4 to the
   values that the reference image of the SeedQR specification implies.
 - **TEST-QR-3** — The tests must hold the matrix of test vector 4 to the
@@ -56,36 +55,40 @@ here.
   vector of 11 times `abandon` and `about`. For each vector, the input is words
   1 to 11 and the faces of word 12. The output must be word 12 of the vector.
 - **TEST-LAST-2** — For one set of 11 words, the tests must run each of the 128
-  pairs of a YELLOW face and a BLUE face. Each result must be a word of the row
-  of that pair. `App::FuguSeed::Mnemonic` must accept the 11 words and the
-  result as 12 valid words.
-- **TEST-LAST-3** — The tests must reject a wrong count, an unknown word, a
-  missing second line, and each bad face of LAST-WORD-2. They must prove that no
-  failure line holds a word or a face.
+  pairs of a YELLOW face and a BLUE face. The face check of LAST-WORD-2 must
+  accept each pair. Each result must be a word of the row of that pair. The
+  checksum check of QR-MNEMONIC-2 must accept the 11 words and the result as 12
+  valid words. The program must print the check word of the faces 8 and 16.
+- **TEST-LAST-3** — The tests must reject a wrong count and an unknown word.
+  They must reject a missing second line, a missing or an extra field, and each
+  bad face of LAST-WORD-2. They must hold each failure line to its exact
+  expected text. That proves that no failure line holds a word or a face.
 
 <a id="test-pack"></a>
 
 ## The packed file
 
-- **TEST-PACK-1** — The tests must run the packed file with an `@INC` that holds
-  the core library alone, with test vector 4 on standard input. They run it on
-  the running perl, and on `/usr/bin/perl` when it exists.
-- **TEST-PACK-2** — The tests must prove that the packed file names no module
+- **TEST-PACK-1** — The tests must run each packed file with an `@INC` that
+  holds the core library alone. `fuguseed-qr` gets test vector 4 on standard
+  input. `fuguseed-last` gets the input of the SeedQR test vector 4 of
+  TEST-LAST-1. The tests run each file on the running perl, and on
+  `/usr/bin/perl` when it exists.
+- **TEST-PACK-2** — The tests must prove that each packed file names no module
   outside the core of perl 5.34 and no `Fugu::` module.
 - **TEST-PACK-3** — The tests must prove that no module of `fuguseed-words`
-  loads `App::FuguSeed::Mnemonic` (SEC-TRUST-1).
-- **TEST-PACK-4** — The tests must hold the text of the packed file to its
-  parts. The parts are the header of `scripts/pack`, one frame for each module,
-  and the program body. They must hold the first line of the file to the literal
-  `#!/usr/bin/perl`. They must hold the packed set to the modules that
-  `fuguseed-qr` loads.
+  loads `App::FuguSeed::Mnemonic` or `App::FuguSeed::Last` (SEC-TRUST-1).
+- **TEST-PACK-4** — The tests must hold the text of each packed file to its
+  parts. The parts are the header of that file in `scripts/pack`, one frame for
+  each module, and the program body. They must hold the first line of each file
+  to the literal `#!/usr/bin/perl`. They must hold each packed set to the
+  modules that its program loads.
 - **TEST-PACK-5** — One test must load `App::FuguSeed` and prove QR-PACK-4 on
   its source. The source must hold the package name that PAUSE indexes, and no
   code. The test ships in the tarball, so it must accept the one `our $VERSION`
   line that `scripts/dist` writes below each package statement.
-- **TEST-PACK-6** — The tests must count the lines of the packed file outside
-  the word list block of LIST-MODULE-1. That count must stay below the bound
-  that SEC-RELEASE-3 gives.
+- **TEST-PACK-6** — The tests must count the lines of each packed file outside
+  the word list block of LIST-MODULE-1. Each count must stay below the bound
+  that SEC-RELEASE-3 gives for that file.
 
 <a id="test-manual"></a>
 
