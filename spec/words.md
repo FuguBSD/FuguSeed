@@ -97,17 +97,16 @@ The tests of the check live in [TEST-SHEET](testing.md#test-sheet).
   words with the paper, and corrects a typed word that is different. When the
   typed words agree with the paper, word 12 on the paper is wrong. A wrong word
   in the `fuguseed-last` run, or a wrong copy of its word, causes this. The
-  person reads the YELLOW block and the BLUE row of word 12 from the sheet. The
-  person runs `fuguseed-last` again on words 1 to 11 of the paper and those two
-  numbers. The person writes its word as word 12, and runs `fuguseed-qr` again.
-  The printed word sits in the row of the faces (LAST-WORD-3, LAST-WORD-4), so
-  its row gives the faces again. The procedure states that a wrong copy can sit
-  in another row, and that the new word 12 then keeps that row.
+  person rolls YELLOW and BLUE again, because the dice give the entropy (D-02).
+  The person runs `fuguseed-last` again on words 1 to 11 of the paper and the
+  new faces. The person writes its word as word 12, and runs `fuguseed-qr`
+  again.
 - **WORDS-MANUAL-4** — The procedure holds the WARNING of D-14 and the note on
   the faces 6 and 9. It holds the rule against a BIP39 passphrase. It requires
   the comparison of the device with the paper after the scan of the SeedQR and
-  before any use, and a second copy. The end of the procedure keeps the SeedQR
-  drawing and the two copies of the words. It burns or shreds every other paper.
+  before any use. The person writes the second copy of the words after that
+  comparison. The end of the procedure keeps the SeedQR drawing and the two
+  copies of the words. It burns or shreds every other paper.
 - **WORDS-MANUAL-5** — The procedure ends with pointers to `fuguseed-last(1)`
   for the check word and to `fuguseed-qr(1)` for the SeedQR. The SeedQR is the
   form of the words that a consumer such as FuguPass reads. The procedure names
