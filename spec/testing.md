@@ -46,6 +46,22 @@ manuals. Each unit that a test proves points here.
   must prove that the program reads one line of standard input between two zone
   views (QR-TEXT-5).
 
+<a id="test-last"></a>
+
+## The check word
+
+- **TEST-LAST-1** — The tests must hold the check word of three vectors. The
+  vectors are the two test vectors of the SeedQR specification, and the BIP39
+  vector of 11 times `abandon` and `about`. For each vector, the input is words
+  1 to 11 and the faces of word 12. The output must be word 12 of the vector.
+- **TEST-LAST-2** — For one set of 11 words, the tests must run each of the 128
+  pairs of a YELLOW face and a BLUE face. Each result must be a word of the row
+  of that pair. `App::FuguSeed::Mnemonic` must accept the 11 words and the
+  result as 12 valid words.
+- **TEST-LAST-3** — The tests must reject a wrong count, an unknown word, a
+  missing second line, and each bad face of LAST-WORD-2. They must prove that no
+  failure line holds a word or a face.
+
 <a id="test-pack"></a>
 
 ## The packed file

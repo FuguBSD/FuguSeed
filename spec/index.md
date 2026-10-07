@@ -1,13 +1,15 @@
 # FuguSeed specification
 
 FuguSeed helps one person make BIP39 seed words with three dice, on paper, and
-turn them into a SeedQR. Two programs exist. `fuguseed-words` builds a printed
+turn them into a SeedQR. Three programs exist. `fuguseed-words` builds a printed
 word sheet from the official English word list, checks a built sheet, and holds
-the offline procedure in its manual. It sees no seed word. `fuguseed-qr` reads
-12 seed words and prints a Standard SeedQR as text, zone by zone, so a person
-can draw it on paper. It sees the words, so it runs on an air-gapped computer
-only. No program contributes entropy to a seed word. The dice give the entropy,
-the paper holds the words, and `fuguseed-qr` finds the check word.
+the offline procedure in its manual. It sees no seed word. `fuguseed-last` reads
+words 1 to 11 and two dice faces, and it prints the check word. `fuguseed-qr`
+reads 12 seed words and prints a Standard SeedQR as text, zone by zone, so a
+person can draw it on paper. These two programs see the words, so they run on an
+air-gapped computer only. No program contributes entropy to a seed word. The
+dice give the entropy, the paper holds the words, and `fuguseed-last` finds the
+check word.
 
 This document is the entry point of the specification. It holds the plan
 contract, the ID conventions, and the document tables.
@@ -46,6 +48,7 @@ IDs of its units.
 | LIST  | [list.md](list.md)         | The word list, its copies, and the list module         |
 | WORDS | [words.md](words.md)       | `fuguseed-words`: the sheet, the check, the manual     |
 | QR    | [qr.md](qr.md)             | `fuguseed-qr`: the words, the code, the pack           |
+| LAST  | [last.md](last.md)         | `fuguseed-last`: the check word, the pack              |
 | SEC   | [security.md](security.md) | The trust levels, the channels, and the release        |
 | TEST  | [testing.md](testing.md)   | The rules that bind the tests                          |
 
