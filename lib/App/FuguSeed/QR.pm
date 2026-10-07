@@ -37,7 +37,7 @@ use App::FuguSeed::Text      ();
 # that fuguseed-last does not call: the checksum check and the digit
 # string (QR-PROGRAM-6).
 #
-# A failure line names a word position or a count, never a word
+# A failure line can name a word position or a count, never a word
 # (SEC-CHANNELS-2).
 
 # NAME and USAGE:

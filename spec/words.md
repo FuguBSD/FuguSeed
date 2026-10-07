@@ -94,13 +94,13 @@ The tests of the check live in [TEST-SHEET](testing.md#test-sheet).
   (D-02). It rolls YELLOW and BLUE for word 12, and no RED. `fuguseed-last`
   prints the check word, and the person writes it as word 12. Then `fuguseed-qr`
   runs on the 12 words. On a wrong checksum, the person compares the 12 typed
-  words with the paper, and corrects a typed word that is different. When the
-  typed words agree with the paper, word 12 on the paper is wrong. A wrong word
-  in the `fuguseed-last` run, or a wrong copy of its word, causes this. The
-  person rolls YELLOW and BLUE again, because the dice give the entropy (D-02).
-  The person runs `fuguseed-last` again on words 1 to 11 of the paper and the
-  new faces. The person writes its word as word 12, and runs `fuguseed-qr`
-  again.
+  words with the paper, and corrects a typed word that is different. The failure
+  `word 12 is not in the word list` starts the same steps. When the typed words
+  agree with the paper, word 12 on the paper is wrong. A wrong word in the
+  `fuguseed-last` run, or a wrong copy of its word, causes this. The person
+  rolls YELLOW and BLUE again, because the dice give the entropy (D-02). The
+  person runs `fuguseed-last` again on words 1 to 11 of the paper and the new
+  faces. The person writes its word as word 12, and runs `fuguseed-qr` again.
 - **WORDS-MANUAL-4** — The procedure holds the WARNING of D-14 and the note on
   the faces 6 and 9. It holds the rule against a BIP39 passphrase. It requires
   the comparison of the device with the paper after the scan of the SeedQR and

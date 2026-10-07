@@ -26,8 +26,8 @@ After each zone view, the program reads one line from standard input
 before the next zone. At the end of the input, it prints the remaining
 zones without a pause.
 
-A failure prints one line to standard error. The line names the word
-position or the count that failed, never a word. A wrong checksum is a
+A failure prints one line to standard error. The line can name the
+word position or the count that failed, never a word. A wrong checksum is a
 failure, and the program prints no SeedQR. C<fuguseed-last> finds the
 check word.
 

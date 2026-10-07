@@ -17,8 +17,8 @@ manual.
   and exits 2.
 - **LAST-PROGRAM-3** — The program reads two lines of standard input
   ([SEC-CHANNELS](security.md#sec-channels)). The first line holds words 1
-  to 11. The second line holds the YELLOW face and the BLUE face of word 12. One
-  or more spaces separate two fields of a line, as in QR-PROGRAM-3.
+  to 11. The second line holds the YELLOW face and the BLUE face of word 12. The
+  whitespace rule of QR-PROGRAM-3 separates the fields of each line.
 - **LAST-PROGRAM-4** — The program writes the check word on one line of standard
   output and exits 0. A failure prints one exact line to standard error and
   exits 1 ([SEC-CHANNELS](security.md#sec-channels)).

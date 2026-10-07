@@ -17,8 +17,9 @@ and the manual.
   argument is a usage error: the program prints one usage line to standard error
   and exits 2.
 - **QR-PROGRAM-3** — The program reads the 12 words from the first line of
-  standard input, separated by spaces
-  ([SEC-CHANNELS](security.md#sec-channels)).
+  standard input ([SEC-CHANNELS](security.md#sec-channels)). A run of whitespace
+  separates two words. The program ignores the whitespace at the start and at
+  the end of the line.
 - **QR-PROGRAM-4** — The program writes the result to standard output: the
   SeedQR text. A wrong checksum is a failure (QR-MNEMONIC-4). A failure prints
   one exact line to standard error and exits 1
@@ -55,10 +56,7 @@ and the manual.
   prints no SeedQR. `fuguseed-last` finds the check word
   ([LAST-WORD](last.md#last-word)).
 
-`App::FuguSeed::Mnemonic` holds the word check and the checksum, and
-`fuguseed-last` calls them too. `App::FuguSeed::QR` holds the checksum check,
-the digit string, and the failure line. The tests of this unit live in
-[TEST-QR](testing.md#test-qr).
+The tests of this unit live in [TEST-QR](testing.md#test-qr).
 
 <a id="qr-codewords"></a>
 

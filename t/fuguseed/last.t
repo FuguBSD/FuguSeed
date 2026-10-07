@@ -176,13 +176,15 @@ for my $blue ( '0', '17', '06', '+6', '-6', '6.0', '1e1', 'six' ) {
 		"the BLUE face '$blue' fails" );
 }
 
-# LAST-PROGRAM-3: the two lines split on runs of spaces, like the
-# first line of fuguseed-qr.
-my ( $spaced, $quiet, $status ) = _run("  $VECTOR[0][0]  \n  5   6  \n");
+# LAST-PROGRAM-3: the whitespace rule of QR-PROGRAM-3. A run of
+# spaces and tabs separates two fields, and the program ignores them
+# at the start and at the end of each line.
+( my $tabbed = $VECTOR[0][0] ) =~ tr/ /\t/;
+my ( $spaced, $quiet, $status ) = _run(" \t$tabbed \t\n\t 5 \t 6 \t\n");
 is_deeply(
 	[ $spaced, $quiet, $status ],
 	[ "merit\n", q{}, 0 ],
-	'runs of spaces separate the fields of each line'
+	'runs of spaces and tabs separate the fields of each line'
 );
 
 done_testing();

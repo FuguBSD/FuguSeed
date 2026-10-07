@@ -71,6 +71,16 @@ is( $output, _slurp(OUTPUT), 'test vector 4 gives the fixture output' );
 is( $error,  q{},            'test vector 4 writes nothing to standard error' );
 is( $status, 0,              'test vector 4 exits 0' );
 
+# QR-PROGRAM-3: a run of spaces and tabs separates two words, and the
+# program ignores them at the start and at the end of the line.
+( my $tabbed = VECTOR ) =~ tr/ /\t/;
+my ( $spaced, $quiet, $exit ) = _run(" \t$tabbed \t\n");
+is_deeply(
+	[ $spaced, $quiet, $exit ],
+	[ _slurp(OUTPUT), q{}, 0 ],
+	'runs of spaces and tabs separate the words'
+);
+
 # QR-PROGRAM-2: an argument is a usage error (D-12).
 my ( $none, $usage, $code ) = _run( q{}, 'build' );
 is( $none, q{}, 'an argument gives no standard output' );

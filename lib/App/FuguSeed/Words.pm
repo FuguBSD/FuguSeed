@@ -37,7 +37,7 @@ use Fugu::File              ();
 # command line interface (WORDS-PROGRAM-4).
 #
 # The program sees no seed word, so it can run on any computer (D-01).
-# No module that it loads maps 12 words to anything, and none of them
+# No module that it loads maps seed words to anything, and none of them
 # loads the mnemonic module or the check word module (SEC-TRUST-1).
 # t/fuguseed/words-program.t proves the rule at the load, and it scans
 # each source of the program for the names of those modules
