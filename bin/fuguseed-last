@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 # ex:ts=8 sw=4:
 # $OpenBSD$
 #
@@ -15,23 +16,16 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-package App::FuguSeed;
+# fuguseed-last: print the check word of 11 seed words and two dice.
+#
+# The program holds no logic: it calls App::FuguSeed::Last->run and it
+# exits with the result (LAST-PROGRAM-1).
 
 use v5.34;
 use warnings;
 use experimental 'signatures';
 no feature qw(indirect multidimensional bareword_filehandles);
 
-# App::FuguSeed - make BIP39 seed words with three dice on paper, and
-# turn them into a SeedQR.
-#
-# This is the lead module of the App-FuguSeed distribution. It holds
-# no code: PAUSE grants the distribution name through this package
-# and indexes the distribution through it. The .pod sidecar maps the
-# modules below it.
-#
-# scripts/pack packs no part of this module: each packed file holds
-# the modules that its program loads, and no other module (QR-PACK-2,
-# QR-PACK-4, LAST-PACK-1).
+use App::FuguSeed::Last ();
 
-1;
+exit App::FuguSeed::Last->run(@ARGV);

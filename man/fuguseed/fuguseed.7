@@ -11,7 +11,7 @@
 .\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 .\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 .\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-.Dd September 19, 2026
+.Dd October 7, 2026
 .Dt FUGUSEED 7
 .Os
 .Sh NAME
@@ -77,7 +77,7 @@ A die that gives one face 5 times or more is a bad die.
 Get another die.
 .El
 .Ss How to find one word
-Each word needs one throw of the three dice.
+Each of the words 1 to 11 needs one throw of the three dice.
 Do these steps for one word:
 .Bl -enum
 .It
@@ -113,38 +113,46 @@ Read the 11 words again, and compare each word with the sheet.
 Each word must be complete and correct.
 .Ss The word 12
 Word 12 is the check word.
-The dice give word 12 like every other word: throw the three dice, and
-write the word of the cell.
-The checksum of the 12 words is correct for one word of the BLUE row
-of that throw only.
-One throw in 16 gives that word.
+The YELLOW die and the BLUE die give its block and its row.
+Do not throw the RED die for word 12.
+The checksum of the 12 words is correct for one word of that row only,
+and
+.Xr fuguseed-last 1
+finds that word.
 .Pp
 Do these steps:
 .Bl -enum
 .It
-Find word 12 with the steps of "How to find one word".
+Put the YELLOW die and the BLUE die in the cup, and throw them on the
+table.
+.It
+Read the YELLOW face and the BLUE face.
 .It
 Start
-.Xr fuguseed-qr 1
-on an air-gapped computer, and type the 12 words.
+.Xr fuguseed-last 1
+on an air-gapped computer.
+.It
+Type the words 1 to 11 on the first line, with a space between two
+words.
+.It
+Type the YELLOW face and the BLUE face on the second line, with a space
+between the two faces.
+.It
+Write the word that the program prints on the line of word 12.
 .El
-.Pp
-The program prints one word, or it prints the SeedQR.
-Both results are correct.
-.Pp
-With one word, that word is the check word of the BLUE row of your
-throw.
-Write the check word in place of word 12 on the paper.
-Start the program again, and type the 12 words again.
-The program prints the SeedQR.
-.Pp
-With the SeedQR, your throw gave the check word.
-Keep word 12 on the paper, and write no new word.
 .Pp
 The check word carries no entropy: it is a function of the other
 bits.
-The YELLOW block and the BLUE row of your throw stay the throw of the
+The YELLOW block and the BLUE row of word 12 stay the throw of the
 dice.
+.Pp
+Then run
+.Xr fuguseed-qr 1
+on the 12 words, as the steps below state.
+When
+.Xr fuguseed-qr 1
+reports a wrong checksum, compare the 12 words that you typed with the
+paper, word for word.
 .Ss The steps after the procedure
 Do these steps at the end:
 .Bl -enum
@@ -173,11 +181,14 @@ Erase the words from the air-gapped computer, and close the program.
 .El
 .Pp
 Use
+.Xr fuguseed-last 1
+for the check word, and
 .Xr fuguseed-qr 1
 for the SeedQR.
 The SeedQR is the form of the 12 words that a consumer, such as
 FuguPass, reads.
 .Sh SEE ALSO
+.Xr fuguseed-last 1 ,
 .Xr fuguseed-qr 1 ,
 .Xr fuguseed-words 1
 .Sh STANDARDS

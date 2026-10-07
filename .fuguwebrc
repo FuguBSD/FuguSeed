@@ -36,6 +36,11 @@ manuals "The word sheet" {
 	anchor = words
 }
 
+manuals "The check word" {
+	dir    = man/fuguseed-last
+	anchor = last
+}
+
 manuals "The SeedQR" {
 	dir    = man/fuguseed-qr
 	anchor = qr

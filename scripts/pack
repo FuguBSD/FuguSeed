@@ -15,7 +15,8 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-# pack: write the packed fuguseed-qr file (QR-PACK).
+# pack: write the packed fuguseed-last and fuguseed-qr files
+# (LAST-PACK, QR-PACK).
 #
 # usage: pack [--version X.Y.Z] [--out DIR]
 #
@@ -24,7 +25,7 @@
 # with the same two values, and it packs the tarball that the build
 # writes. The build derives the version from the latest tag when the
 # value is empty, so no second copy of the tag logic exists here. The
-# tarball holds the modules with the $VERSION of the tag, so the
+# tarball holds the modules with the $VERSION of the tag, so each
 # packed file names its version.
 #
 # The script reads the tarball path from "Built <path>", the last
@@ -32,13 +33,14 @@
 # directory, it packs from the extracted tree, and it removes the
 # tree.
 #
-# The packed file holds the six modules of the program, in dependency
-# order, and the program body last. Before each module the script
-# writes a BEGIN block that marks the module as loaded, so a use line
-# of a later module opens no file. A block around each module keeps
-# the package and the file variables of one module apart from the
-# next. The file holds no timestamp and no path, so two packs of one
-# tree are byte-equal (QR-PACK-3).
+# One build feeds the two packed files. Each file holds its header,
+# the modules of its program, in dependency order, and the program
+# body last. Before each module the script writes a BEGIN block that
+# marks the module as loaded, so a use line of a later module opens
+# no file. A block around each module keeps the package and the file
+# variables of one module apart from the next. A file holds no
+# timestamp and no path, so two packs of one tree are byte-equal
+# (QR-PACK-3).
 #
 # The script is a bootstrap script of this repository: core modules
 # only. It runs scripts/dist with the perl that runs it, and that
@@ -59,28 +61,32 @@ use Getopt::Long qw(GetOptions);
 #	does.
 use constant DIST => 'scripts/dist';
 
-# MODULES:
-#	The six modules of the packed file, in dependency order
-#	(QR-PROGRAM-6, LIST-MODULE-1). The script packs these and no
-#	other module (QR-PACK-2).
-use constant MODULES => [
-	'App/FuguSeed/List.pm',      'App/FuguSeed/Mnemonic.pm',
-	'App/FuguSeed/Codewords.pm', 'App/FuguSeed/Matrix.pm',
-	'App/FuguSeed/Text.pm',      'App/FuguSeed/QR.pm',
-];
-
-# PROGRAM and OUTPUT:
-#	The program body in the tarball, and the name of the packed
-#	file. release.yml names that file as the one asset of the
-#	release (SEC-RELEASE-1).
-use constant PROGRAM => 'bin/fuguseed-qr';
-use constant OUTPUT  => 'fuguseed-qr';
-
-# HEADER:
-#	The first lines of the packed file. The shebang is the base
+# HEADER_LAST and HEADER_QR:
+#	The first lines of each packed file. The shebang is the base
 #	perl: the air-gapped computer runs the perl that it has, and
 #	it installs nothing (D-07).
-use constant HEADER => <<'HEADER';
+use constant HEADER_LAST => <<'HEADER';
+#!/usr/bin/perl
+# fuguseed-last: print the check word of 11 seed words and two dice.
+#
+# scripts/pack of FuguSeed writes this file from the modules of that
+# repository, and the release publishes it beside the tarballs. Do
+# not edit this file. Edit the modules, and pack them again.
+#
+# The file holds the program and the three modules that it loads.
+# Each module keeps its source, under a BEGIN block that marks the
+# module as loaded. The file loads Digest::SHA and the pragmas of its
+# source, and no other module. Every perl since 5.34 holds each one.
+#
+# The file opens no file, it starts no process, and it reads no
+# environment variable. The three standard streams are its one
+# contact with the computer. Words 1 to 11 and the YELLOW and BLUE
+# faces of word 12 enter on standard input. The check word leaves on
+# standard output, and no other word or face leaves on any channel.
+
+HEADER
+
+use constant HEADER_QR => <<'HEADER';
 #!/usr/bin/perl
 # fuguseed-qr: print a Standard SeedQR as text, zone by zone.
 #
@@ -99,6 +105,37 @@ use constant HEADER => <<'HEADER';
 # input, and they leave on no channel.
 
 HEADER
+
+# PACKS:
+#	One row for each packed file: the name of the file, the
+#	program body in the tarball, the header, and the modules of
+#	the program in dependency order (LAST-PROGRAM-6, QR-PROGRAM-6,
+#	LIST-MODULE-1). The script packs these modules and no other
+#	module (QR-PACK-2). release.yml names each file as an asset of
+#	the release (SEC-RELEASE-1).
+use constant PACKS => [ {
+		output  => 'fuguseed-last',
+		program => 'bin/fuguseed-last',
+		header  => HEADER_LAST,
+		modules => [
+			'App/FuguSeed/List.pm', 'App/FuguSeed/Mnemonic.pm',
+			'App/FuguSeed/Last.pm',
+		],
+	},
+	{
+		output  => 'fuguseed-qr',
+		program => 'bin/fuguseed-qr',
+		header  => HEADER_QR,
+		modules => [
+			'App/FuguSeed/List.pm',
+			'App/FuguSeed/Mnemonic.pm',
+			'App/FuguSeed/Codewords.pm',
+			'App/FuguSeed/Matrix.pm',
+			'App/FuguSeed/Text.pm',
+			'App/FuguSeed/QR.pm',
+		],
+	},
+];
 
 my $version = q{};
 my $out     = 'build';
@@ -179,16 +216,17 @@ sub _extract ( $tarball, $temp )
 	return $tree;
 }
 
-# _write($file, $tree):
-#	Write the packed file from the extracted tree $tree. The
-#	program body comes last, under package main, without the
-#	shebang of the source: the packed file holds its own.
-sub _write ( $file, $tree )
+# _write($file, $tree, $pack):
+#	Write the packed file of the row $pack of PACKS from the
+#	extracted tree $tree. The program body comes last, under
+#	package main, without the shebang of the source: the packed
+#	file holds its own.
+sub _write ( $file, $tree, $pack )
 {
 	open my $fh, '>', $file or die "pack: write $file: $!\n";
-	print {$fh} HEADER or die "pack: write $file: $!\n";
+	print {$fh} $pack->{header} or die "pack: write $file: $!\n";
 
-	for my $module ( @{ +MODULES } ) {
+	for my $module ( @{ $pack->{modules} } ) {
 		my $source =
 		    _read( File::Spec->catfile( $tree, 'lib', $module ) );
 		print {$fh} "BEGIN { \$INC{'$module'} = __FILE__; }\n",
@@ -196,7 +234,7 @@ sub _write ( $file, $tree )
 		    or die "pack: write $file: $!\n";
 	}
 
-	my $body = _read( File::Spec->catfile( $tree, PROGRAM ) );
+	my $body = _read( File::Spec->catfile( $tree, $pack->{program} ) );
 	$body =~ s/\A\#![^\n]*\n//;
 	print {$fh} "package main;\n\n", $body
 	    or die "pack: write $file: $!\n";
@@ -217,9 +255,10 @@ $] >= 5.036
 my $tarball = _build( $version, $out );
 my $temp    = File::Spec->catdir( $out, 'pack' );
 my $tree    = _extract( $tarball, $temp );
-my $file    = File::Spec->catfile( $out, OUTPUT );
 
-_write( $file, $tree );
+for my $pack ( @{ +PACKS } ) {
+	my $file = File::Spec->catfile( $out, $pack->{output} );
+	_write( $file, $tree, $pack );
+	say "Packed $file";
+}
 remove_tree($temp);
-
-say "Packed $file";

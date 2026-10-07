@@ -89,13 +89,14 @@ jobs:
     with:
       dist: App-FuguSeed
       name: FuguSeed
-      # One asset joins the tarballs: the packed fuguseed-qr file. make
-      # dist writes it under build/, and the shared workflow reads the
-      # name there, so the name carries no directory part.
-      assets: fuguseed-qr
+      # Two assets join the tarballs: the packed fuguseed-last and
+      # fuguseed-qr files. make dist writes them under build/, and the
+      # shared workflow reads each name there, so a name carries no
+      # directory part.
+      assets: fuguseed-last fuguseed-qr
       install-note:
-        "Copy the packed `fuguseed-qr` file to the air-gapped computer, or
-        install this release tarball:"
+        "Copy the packed `fuguseed-last` and `fuguseed-qr` files to the
+        air-gapped computer, or install this release tarball:"
       pause: true
       # A dispatch names the tag, because the ref of the run is the
       # branch. An empty value on a push keeps the ref of the push.

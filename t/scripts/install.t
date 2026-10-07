@@ -107,15 +107,18 @@ is( $status, 0, 'Makefile.PL writes the Makefile' ) or BAIL_OUT($report);
 ( $report, $status ) = _run( $tree, $make, 'install' );
 is( $status, 0, 'make install fills the prefix' ) or BAIL_OUT($report);
 
-# WORDS-PROGRAM-1: the install writes fuguseed-words into the prefix.
-# The dist.exe line of .toolingrc carries that file, and without the
-# line the prefix holds no program.
+# WORDS-PROGRAM-1: the install writes fuguseed-words into the prefix,
+# and fuguseed-last and fuguseed-qr beside it. A dist.exe line of
+# .toolingrc carries each file, and without the line the prefix holds
+# no such program.
 #
 # A class name after a file test operator is a bareword filehandle on
 # perl v5.34, so each path reaches a variable first.
 my $installed = File::Spec->catfile( $prefix, 'bin', 'fuguseed-words' );
+my $last      = File::Spec->catfile( $prefix, 'bin', 'fuguseed-last' );
 my $packed    = File::Spec->catfile( $prefix, 'bin', 'fuguseed-qr' );
 ok( -x $installed, 'the install writes fuguseed-words into the prefix' );
+ok( -x $last,      'the install writes fuguseed-last into the prefix' );
 ok( -x $packed,    'the install writes fuguseed-qr into the prefix' );
 
 # LIST-SHARE-2: the share file resolves in the installed

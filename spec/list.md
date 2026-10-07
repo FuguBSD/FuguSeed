@@ -37,7 +37,7 @@ specifies the list, its two shipped copies, and the module that serves it
   module file. The words sit one per line, so a person can diff them against the
   share file. It holds the pinned SHA-256 of LIST-SOURCE-1 as one constant.
 - **LIST-MODULE-2** — The module must run on core Perl v5.34 with no dependency,
-  because `fuguseed-qr` packs it (D-07).
+  because `fuguseed-last` and `fuguseed-qr` pack it (D-07).
 - **LIST-MODULE-3** — The module must give the word of an index, the index of a
   word, and the list as an array. An unknown word gives `undef`.
 

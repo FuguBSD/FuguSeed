@@ -16,9 +16,9 @@ manual.
   argument is a usage error: the program prints one usage line to standard error
   and exits 2.
 - **LAST-PROGRAM-3** — The program reads two lines of standard input
-  ([SEC-CHANNELS](security.md#sec-channels)). The first line holds words 1 to
-  11, separated by spaces. The second line holds the YELLOW face and the BLUE
-  face of word 12, separated by one space.
+  ([SEC-CHANNELS](security.md#sec-channels)). The first line holds words 1
+  to 11. The second line holds the YELLOW face and the BLUE face of word 12. One
+  or more spaces separate two fields of a line, as in QR-PROGRAM-3.
 - **LAST-PROGRAM-4** — The program writes the check word on one line of standard
   output and exits 0. A failure prints one exact line to standard error and
   exits 1 ([SEC-CHANNELS](security.md#sec-channels)).
@@ -27,9 +27,10 @@ manual.
   repository ([SEC-TRUST](security.md#sec-trust)).
 - **LAST-PROGRAM-6** — The program loads three modules of this repository. The
   modules are `App::FuguSeed::List`, `App::FuguSeed::Mnemonic`, and
-  `App::FuguSeed::Last`. `App::FuguSeed::Mnemonic` holds the word checks and the
-  checksum. `App::FuguSeed::Last` holds the face check, the check word, and the
-  flow. Every function is pure: it takes values and returns values.
+  `App::FuguSeed::Last`. `App::FuguSeed::Mnemonic` holds only the functions that
+  both programs call: the word checks, the indexes, and the checksum.
+  `App::FuguSeed::Last` holds the face check, the check word, and the flow.
+  Every function is pure: it takes values and returns values.
 
 <a id="last-word"></a>
 
@@ -38,10 +39,12 @@ manual.
 - **LAST-WORD-1** — The first line must hold exactly 11 words. Each word must be
   in the list of LIST-MODULE-1. Another count or an unknown word is a failure.
   The failure line names the count or the word position.
-- **LAST-WORD-2** — A face is a decimal number with no leading zero. The YELLOW
-  face must be 1 to 8, and the BLUE face must be 1 to 16 (D-05). A missing face,
-  an extra field, or a face out of its range is a failure. The failure line
-  names the die, never the face.
+- **LAST-WORD-2** — The second line must hold exactly two fields. Another count
+  is a failure, and a missing second line holds no field. The failure line names
+  the field count. A face is a decimal number with no sign and no leading zero.
+  The YELLOW face must be 1 to 8, and the BLUE face must be 1 to 16 (D-05).
+  Another form or a face out of its range is a failure. The failure line names
+  the die, never the face.
 - **LAST-WORD-3** — The row of word 12 starts at the index
   `(Y-1)*256 + (B-1)*16` (D-05). The 11 indexes give 121 bits, and the 7 high
   bits of the row give the last 7 bits of the 128 entropy bits.
