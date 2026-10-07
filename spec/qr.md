@@ -151,8 +151,12 @@ tests in [TEST-PACK](testing.md#test-pack).
 - **QR-MANUAL-1** — `man/fuguseed-qr/fuguseed-qr.1` documents the program, the
   input, the exit codes, and the digest check of SEC-RELEASE-2. It documents the
   one result, the SeedQR, and the failure of QR-MNEMONIC-4. On that failure, the
-  person compares the 12 words with the paper. The manual points at
-  `fuguseed-last(1)` for the check word.
+  person compares the 12 typed words with the paper. The person corrects a typed
+  word that is different from the paper, and runs the program again. When the
+  typed words agree with the paper, a word on the paper is wrong. For the words
+  of the procedure, word 12 is wrong, and the manual points at `fuguseed(7)` for
+  the steps of WORDS-MANUAL-3. The manual points at `fuguseed-last(1)` for the
+  check word.
 - **QR-MANUAL-2** — The manual holds the drawing procedure in ASD-STE100 (D-13).
   The procedure names the air-gapped computer, the printed 25 x 25 template, and
   the marker. It draws one zone at a time and counts the dark modules of each

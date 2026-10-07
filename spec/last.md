@@ -77,3 +77,7 @@ tests in [TEST-PACK](testing.md#test-pack).
   air-gapped computer only (SEC-TRUST-2). It is in ASD-STE100 (D-13).
 - **LAST-MANUAL-3** — The manual states the next step: the person writes the
   check word as word 12, then runs `fuguseed-qr` on the 12 words.
+- **LAST-MANUAL-4** — The manual states that the program cannot find a wrong
+  word in words 1 to 11. The check word makes the checksum valid for any 11
+  words of the list. When the paper holds the same wrong word, `fuguseed-qr`
+  cannot find it either.

@@ -153,6 +153,44 @@ When
 .Xr fuguseed-qr 1
 reports a wrong checksum, compare the 12 words that you typed with the
 paper, word for word.
+When a typed word is different from the paper, correct the word.
+Then run
+.Xr fuguseed-qr 1
+again.
+.Pp
+When the typed words agree with the paper, word 12 on the paper is
+wrong.
+A wrong word in the run of
+.Xr fuguseed-last 1 ,
+or a wrong copy of its word, causes this.
+Do these steps to correct word 12:
+.Bl -enum
+.It
+Find word 12 of the paper on the sheet.
+Read the number of its YELLOW block and the number of its BLUE row.
+.It
+Start
+.Xr fuguseed-last 1
+again.
+.It
+Type the words 1 to 11 of the paper on the first line.
+.It
+Type the YELLOW number and the BLUE number on the second line.
+.It
+Write the word that the program prints as word 12, in place of the
+wrong word.
+.It
+Run
+.Xr fuguseed-qr 1
+again.
+.El
+.Pp
+.Xr fuguseed-last 1
+prints a word of the row of the two faces, so the row of that word
+gives the two faces again.
+A wrong copy can put word 12 in another row.
+Then the new word 12 keeps the block and the row of the wrong copy,
+not of the dice.
 .Ss The steps after the procedure
 Do these steps at the end:
 .Bl -enum

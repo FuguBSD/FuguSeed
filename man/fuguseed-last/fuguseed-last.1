@@ -112,8 +112,9 @@ the generation of a deterministic key.
 .Sh AUTHORS
 .An Dick Olsson Aq Mt hi@senzilla.io
 .Sh CAVEATS
-The check word makes the checksum valid for any 11 words of the list.
-Thus the program cannot find a wrong word in words 1 to 11.
+The check word makes the checksum valid for any 11 words of the list,
+so the program cannot find a wrong word in words 1 to 11.
 Compare each word with the sheet before you type it.
+When the paper holds the same wrong word,
 .Xr fuguseed-qr 1
-checks the checksum of the 12 words again.
+cannot find it either: the 12 words have a valid checksum.

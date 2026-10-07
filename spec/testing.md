@@ -55,9 +55,10 @@ here.
   vector of 11 times `abandon` and `about`. For each vector, the input is words
   1 to 11 and the faces of word 12. The output must be word 12 of the vector.
 - **TEST-LAST-2** — For one set of 11 words, the tests must run each of the 128
-  pairs of a YELLOW face and a BLUE face. Each result must be a word of the row
-  of that pair. The checksum check of QR-MNEMONIC-2 must accept the 11 words and
-  the result as 12 valid words.
+  pairs of a YELLOW face and a BLUE face. The face check of LAST-WORD-2 must
+  accept each pair. Each result must be a word of the row of that pair. The
+  checksum check of QR-MNEMONIC-2 must accept the 11 words and the result as 12
+  valid words. The program must print the check word of the faces 8 and 16.
 - **TEST-LAST-3** — The tests must reject a wrong count and an unknown word.
   They must reject a missing second line, a missing or an extra field, and each
   bad face of LAST-WORD-2. They must hold each failure line to its exact

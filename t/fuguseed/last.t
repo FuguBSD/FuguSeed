@@ -104,8 +104,9 @@ is_deeply(
 	'an argument gives one usage line and exits 2'
 );
 
-# TEST-LAST-2: each of the 128 face pairs gives a word of its row,
-# and the 11 words and that word pass the checksum of fuguseed-qr.
+# TEST-LAST-2: the face check accepts each of the 128 face pairs. Each
+# pair gives a word of its row, and the 11 words and that word pass
+# the checksum of fuguseed-qr.
 my @eleven = split q{ }, $VECTOR[0][0];
 my @wrong;
 for my $yellow ( 1 .. 8 ) {
@@ -116,12 +117,24 @@ for my $yellow ( 1 .. 8 ) {
 		my $row   = ( $yellow - 1 ) * 256 + ( $blue - 1 ) * 16;
 
 		push @wrong, "$yellow $blue"
-		    if $index < $row
+		    if defined App::FuguSeed::Last->fault( [ "$yellow", "$blue" ] )
+		    || $index < $row
 		    || $index >= $row + 16
 		    || !App::FuguSeed::QR->valid( [ @eleven, $word ] );
 	}
 }
-is( "@wrong", q{}, 'each face pair gives the valid word of its row' );
+is( "@wrong", q{},
+	'each face pair passes the face check and gives the valid word of its row'
+);
+
+# TEST-LAST-2: the program accepts the highest faces, 8 and 16. "zone"
+# is index 2046, in YELLOW block 8 and BLUE row 16.
+my ( $edge, $calm, $exit ) = _run("$VECTOR[0][0]\n8 16\n");
+is_deeply(
+	[ $edge, $calm, $exit ],
+	[ "zone\n", q{}, 0 ],
+	'the faces 8 16 give the check word zone'
+);
 
 # TEST-LAST-3: a wrong count and an unknown word (LAST-WORD-1).
 my $faces = $VECTOR[0][1];
