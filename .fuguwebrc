@@ -18,6 +18,7 @@ page "index.html" {
 page "manuals.html" {
 	title = Manuals
 	index = yes
+	body  = manuals.body.html
 }
 
 page "404.html" {
@@ -26,27 +27,27 @@ page "404.html" {
 	unlinked = yes
 }
 
-manuals "The offline procedure" {
-	dir    = man/fuguseed
-	anchor = procedure
+manuals procedure {
+	heading = The offline procedure
+	dir     = man/fuguseed
 }
 
-manuals "The word sheet" {
-	dir    = man/fuguseed-words
-	anchor = words
+manuals words {
+	heading = The word sheet
+	dir     = man/fuguseed-words
 }
 
-manuals "The check word" {
-	dir    = man/fuguseed-last
-	anchor = last
+manuals last {
+	heading = The check word
+	dir     = man/fuguseed-last
 }
 
-manuals "The SeedQR" {
-	dir    = man/fuguseed-qr
-	anchor = qr
+manuals qr {
+	heading = The SeedQR
+	dir     = man/fuguseed-qr
 }
 
-modules "Modules" {
-	dir    = lib/App/FuguSeed
-	anchor = modules
+modules modules {
+	heading = Modules
+	dir     = lib/App/FuguSeed
 }
